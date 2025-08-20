@@ -4,8 +4,16 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
+/**
+ * Point d'entrée de l'application Spring Boot.
+ */
 public class SpringDemoApplication {
 
+    /**
+     * Démarre l'application Spring Boot.
+     *
+     * @param args arguments de ligne de commande
+     */
     public static void main(String[] args) {
         SpringApplication.run(SpringDemoApplication.class, args);
     }

@@ -3,14 +3,19 @@ package fr.digi.d202508.springdemo.controleurs;
 import fr.digi.d202508.springdemo.services.VilleService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 @RestController
 @RequestMapping("/villes")
+/**
+ * Contrôleur REST gérant un catalogue en mémoire de villes et les opérations CRUD associées.
+ */
 public class VilleControleur {
 
     private List<VilleService> villes = new ArrayList<>(Arrays.asList(
@@ -25,12 +30,41 @@ public class VilleControleur {
     ));
 
     @GetMapping
+    /**
+     * Récupère la liste complète des villes.
+     *
+     * @return la liste des villes en mémoire
+     */
     public List<VilleService> getVilles() {
         return villes;
     }
 
     @PostMapping
-    public ResponseEntity<String> ajouterVille(@RequestBody VilleService nouvelleVille) {
+    /**
+     * Ajoute une nouvelle ville après validation.
+     *
+     * @param nouvelleVille la ville à ajouter
+     * @param bindingResult résultat de la validation de la requête
+     * @return 200 si ajout réussi, 400 si erreurs de validation ou doublons
+     */
+    public ResponseEntity<String> ajouterVille(@Valid @RequestBody VilleService nouvelleVille, BindingResult bindingResult) {
+        // Vérifier les erreurs de validation
+        if (bindingResult.hasErrors()) {
+            StringBuilder errors = new StringBuilder();
+            bindingResult.getFieldErrors().forEach(error -> 
+                errors.append(error.getDefaultMessage()).append("; ")
+            );
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors.toString());
+        }
+        
+        // Vérifier si l'ID existe déjà
+        for (VilleService ville : villes) {
+            if (ville.getId() == nouvelleVille.getId()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Une ville avec cet ID existe déjà");
+            }
+        }
+        
+        // Vérifier si la ville existe déjà
         for (VilleService ville : villes) {
             if (ville.getNom().equalsIgnoreCase(nouvelleVille.getNom())) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La ville existe déjà");
@@ -42,6 +76,12 @@ public class VilleControleur {
     }
 
     @GetMapping("/{id}")
+    /**
+     * Récupère une ville par son identifiant.
+     *
+     * @param id identifiant de la ville
+     * @return 200 avec la ville si trouvée, 404 sinon
+     */
     public ResponseEntity<VilleService> getVilleById(@PathVariable int id) {
         for (VilleService ville : villes) {
             if (ville.getId() == id) {
@@ -52,7 +92,24 @@ public class VilleControleur {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> modifierVille(@PathVariable int id, @RequestBody VilleService villeModifiee) {
+    /**
+     * Met à jour une ville existante.
+     *
+     * @param id identifiant de la ville à modifier
+     * @param villeModifiee nouvelle représentation de la ville
+     * @param bindingResult résultat de la validation
+     * @return 200 si succès, 400 si erreurs de validation, 404 si la ville n'existe pas
+     */
+    public ResponseEntity<String> modifierVille(@PathVariable int id, @Valid @RequestBody VilleService villeModifiee, BindingResult bindingResult) {
+        // Vérifier les erreurs de validation
+        if (bindingResult.hasErrors()) {
+            StringBuilder errors = new StringBuilder();
+            bindingResult.getFieldErrors().forEach(error -> 
+                errors.append(error.getDefaultMessage()).append("; ")
+            );
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors.toString());
+        }
+        
         for (int i = 0; i < villes.size(); i++) {
             if (villes.get(i).getId() == id) {
                 villeModifiee.setId(id);
@@ -64,6 +121,12 @@ public class VilleControleur {
     }
 
     @DeleteMapping("/{id}")
+    /**
+     * Supprime une ville par son identifiant.
+     *
+     * @param id identifiant de la ville à supprimer
+     * @return 200 si supprimée, 404 si introuvable
+     */
     public ResponseEntity<String> supprimerVille(@PathVariable int id) {
         for (int i = 0; i < villes.size(); i++) {
             if (villes.get(i).getId() == id) {
