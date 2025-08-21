@@ -21,7 +21,6 @@ public class VilleService {
 
     /**
      * Construit une ville.
-     *
      * @param id identifiant strictement positif
      * @param nom nom de la ville
      * @param nbHabitants nombre d'habitants (>= 1)
@@ -33,7 +32,6 @@ public class VilleService {
     }
     /**
      * Nom de la ville.
-     *
      * @return le nom
      */
     public String getNom() {
@@ -41,7 +39,6 @@ public class VilleService {
     }
     /**
      * Modifie le nom de la ville.
-     *
      * @param nom nouveau nom
      */
     public void setNom(String nom) {
@@ -49,7 +46,6 @@ public class VilleService {
     }
     /**
      * Nombre d'habitants.
-     *
      * @return le nombre d'habitants
      */
     public int getNbHabitants() {
@@ -57,7 +53,6 @@ public class VilleService {
     }
     /**
      * Modifie le nombre d'habitants.
-     *
      * @param nbHabitants nouveau nombre d'habitants
      */
     public void setNbHabitants(int nbHabitants) {
@@ -65,7 +60,6 @@ public class VilleService {
     }
     /**
      * Identifiant de la ville.
-     *
      * @return l'identifiant
      */
     public int getId() {
@@ -73,7 +67,6 @@ public class VilleService {
     }
     /**
      * Modifie l'identifiant de la ville.
-     *
      * @param id nouvel identifiant
      */
     public void setId(int id) {
