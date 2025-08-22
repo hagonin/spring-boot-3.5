@@ -1,6 +1,6 @@
 package fr.digi.d202508.springdemo.controleurs;
 
-import fr.digi.d202508.springdemo.entities.Departement;
+import fr.digi.d202508.springdemo.dtos.DepartementDto;
 import fr.digi.d202508.springdemo.services.DepartementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -42,7 +42,7 @@ public class DepartementControleur {
      * @return la liste des départements
      */
     @GetMapping
-    public List<Departement> getAllDepartments() {
+    public List<DepartementDto> getAllDepartments() {
         return departementService.getAllDepartments();
     }
 
@@ -52,8 +52,8 @@ public class DepartementControleur {
      * @return 200 avec le département si trouvé, 404 sinon
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Departement> getDepartmentById(@PathVariable Long id) {
-        Departement departement = departementService.getDepartmentById(id);
+    public ResponseEntity<DepartementDto> getDepartmentById(@PathVariable Long id) {
+        DepartementDto departement = departementService.getDepartmentById(id);
         if (departement != null) {
             return ResponseEntity.ok(departement);
         }
@@ -66,8 +66,8 @@ public class DepartementControleur {
      * @return 200 avec le département si trouvé, 404 sinon
      */
     @GetMapping("/code-departement/{code}")
-    public ResponseEntity<Departement> getDepartmentByCode(@PathVariable String code) {
-        Departement departement = departementService.getDepartmentByCode(code);
+    public ResponseEntity<DepartementDto> getDepartmentByCode(@PathVariable String code) {
+        DepartementDto departement = departementService.getDepartmentByCode(code);
         if (departement != null) {
             return ResponseEntity.ok(departement);
         }
@@ -81,7 +81,7 @@ public class DepartementControleur {
      * @return 201 si ajout réussi, 400 si erreurs de validation ou doublons
      */
     @PostMapping
-    public ResponseEntity<?> createDepartment(@Valid @RequestBody Departement nouveauDepartement, BindingResult result) {
+    public ResponseEntity<?> createDepartment(@Valid @RequestBody DepartementDto nouveauDepartement, BindingResult result) {
         ResponseEntity<String> validationError = validateDepartment(result);
         if (validationError != null) {
             return validationError;
@@ -93,7 +93,7 @@ public class DepartementControleur {
                 .body("Un département avec ce code existe déjà");
         }
         
-        Departement departementCree = departementService.createDepartment(nouveauDepartement);
+        DepartementDto departementCree = departementService.createDepartment(nouveauDepartement);
         return ResponseEntity.status(HttpStatus.CREATED).body(departementCree);
     }
 
@@ -105,13 +105,13 @@ public class DepartementControleur {
      * @return 200 si succès, 400 si erreurs de validation, 404 si le département n'existe pas
      */
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateDepartment(@PathVariable Long id, @Valid @RequestBody Departement departementModifie, BindingResult result) {
+    public ResponseEntity<?> updateDepartment(@PathVariable Long id, @Valid @RequestBody DepartementDto departementModifie, BindingResult result) {
         ResponseEntity<String> validationError = validateDepartment(result);
         if (validationError != null) {
             return validationError;
         }
         
-        Departement departementMisAJour = departementService.updateDepartment(id, departementModifie);
+        DepartementDto departementMisAJour = departementService.updateDepartment(id, departementModifie);
         if (departementMisAJour != null) {
             return ResponseEntity.ok(departementMisAJour);
         }
