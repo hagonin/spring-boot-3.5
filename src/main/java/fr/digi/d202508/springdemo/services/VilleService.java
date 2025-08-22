@@ -1,75 +1,106 @@
 package fr.digi.d202508.springdemo.services;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Size;
+import fr.digi.d202508.springdemo.daos.VilleDao;
+import fr.digi.d202508.springdemo.entities.Ville;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
- * Représentation d'une ville avec validation des champs pour les opérations REST.
+ * Service gérant la logique métier des opérations sur les villes.
  */
+@Service
+@Transactional(readOnly = true)
 public class VilleService {
-    @Positive(message = "L'id doit être strictement positif")
-    private int id;
-    
-    @NotBlank(message = "Le nom de la ville ne peut pas être nul")
-    @Size(min = 2, message = "Le nom de la ville doit avoir au moins 2 caractères")
-    private String nom;
-    
-    @Min(value = 1, message = "Le nombre d'habitants doit être supérieur ou égal à 1")
-    private int nbHabitants;
+
+    @Autowired
+    private VilleDao villeDao;
 
     /**
-     * Construit une ville.
-     * @param id identifiant strictement positif
+     * Extrait et retourne la liste de toutes les villes.
+     * @return la liste des villes
+     */
+    public List<Ville> extractVilles() {
+        return villeDao.findAll();
+    }
+
+    /**
+     * Récupère une ville par son identifiant.
+     * @param idVille identifiant de la ville
+     * @return la ville si trouvée, null sinon
+     */
+    public Ville extractVille(int idVille) {
+        return villeDao.findById((long) idVille);
+    }
+
+    /**
+     * Récupère une ville par son nom.
      * @param nom nom de la ville
-     * @param nbHabitants nombre d'habitants (>= 1)
+     * @return la ville si trouvée, null sinon
      */
-    public VilleService(int id, String nom, int nbHabitants) {
-        this.id = id;
-        this.nom = nom;
-        this.nbHabitants = nbHabitants;
+    public Ville extractVille(String nom) {
+        return villeDao.findByNom(nom);
     }
+
     /**
-     * Nom de la ville.
-     * @return le nom
+     * Insère une nouvelle ville et retourne la liste mise à jour.
+     * @param ville la ville à insérer
+     * @return la liste des villes après ajout
      */
-    public String getNom() {
-        return nom;
+    @Transactional
+    public List<Ville> insertVille(Ville ville) {
+        villeDao.save(ville);
+        return villeDao.findAll();
     }
+
     /**
-     * Modifie le nom de la ville.
-     * @param nom nouveau nom
+     * Modifie une ville par son identifiant et retourne la liste mise à jour.
+     * @param idVille identifiant de la ville à modifier
+     * @param villeModifiee nouvelle représentation de la ville
+     * @return la liste des villes après modification
      */
-    public void setNom(String nom) {
-        this.nom = nom;
+    @Transactional
+    public List<Ville> modifierVille(int idVille, Ville villeModifiee) {
+        if (villeDao.existsById((long) idVille)) {
+            villeModifiee.setId((long) idVille);
+            villeDao.save(villeModifiee);
+        }
+        return villeDao.findAll();
     }
+
     /**
-     * Nombre d'habitants.
-     * @return le nombre d'habitants
+     * Supprime une ville par son identifiant et retourne la liste mise à jour.
+     * @param idVille identifiant de la ville à supprimer
+     * @return la liste des villes après suppression
      */
-    public int getNbHabitants() {
-        return nbHabitants;
+    @Transactional
+    public List<Ville> supprimerVille(int idVille) {
+        if (villeDao.existsById((long) idVille)) {
+            villeDao.deleteById((long) idVille);
+        }
+        return villeDao.findAll();
     }
+
     /**
-     * Modifie le nombre d'habitants.
-     * @param nbHabitants nouveau nombre d'habitants
+     * Récupère les N villes les plus peuplées d'un département.
+     * @param departementCode code du département
+     * @param n nombre de villes à récupérer
+     * @return la liste des villes triées par population décroissante
      */
-    public void setNbHabitants(int nbHabitants) {
-        this.nbHabitants = nbHabitants;
+    public List<Ville> getTopVillesByDepartement(String departementCode, int n) {
+        return villeDao.findTopVillesByDepartementCode(departementCode, n);
     }
+
     /**
-     * Identifiant de la ville.
-     * @return l'identifiant
+     * Récupère les villes d'un département dans une tranche de population.
+     * @param departementCode code du département
+     * @param minPopulation population minimale
+     * @param maxPopulation population maximale
+     * @return la liste des villes dans la tranche de population
      */
-    public int getId() {
-        return id;
-    }
-    /**
-     * Modifie l'identifiant de la ville.
-     * @param id nouvel identifiant
-     */
-    public void setId(int id) {
-        this.id = id;
+    public List<Ville> getVillesByDepartementAndPopulationRange(String departementCode, int minPopulation, int maxPopulation) {
+        return villeDao.findVillesByDepartementCodeAndPopulationRange(departementCode, minPopulation, maxPopulation);
     }
 }
