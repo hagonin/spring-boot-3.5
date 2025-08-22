@@ -22,7 +22,7 @@ public class VilleService {
      * Extrait et retourne la liste de toutes les villes.
      * @return la liste des villes
      */
-    public List<Ville> extractVilles() {
+    public List<Ville> getAllCities() {
         return villeDao.findAll();
     }
 
@@ -31,7 +31,7 @@ public class VilleService {
      * @param idVille identifiant de la ville
      * @return la ville si trouvée, null sinon
      */
-    public Ville extractVille(int idVille) {
+    public Ville getCityById(int idVille) {
         return villeDao.findById((long) idVille);
     }
 
@@ -40,8 +40,8 @@ public class VilleService {
      * @param nom nom de la ville
      * @return la ville si trouvée, null sinon
      */
-    public Ville extractVille(String nom) {
-        return villeDao.findByNom(nom);
+    public Ville getCityByName(String nom) {
+        return villeDao.findByName(nom);
     }
 
     /**
@@ -50,7 +50,7 @@ public class VilleService {
      * @return la liste des villes après ajout
      */
     @Transactional
-    public List<Ville> insertVille(Ville ville) {
+    public List<Ville> createCity(Ville ville) {
         villeDao.save(ville);
         return villeDao.findAll();
     }
@@ -62,7 +62,7 @@ public class VilleService {
      * @return la liste des villes après modification
      */
     @Transactional
-    public List<Ville> modifierVille(int idVille, Ville villeModifiee) {
+    public List<Ville> updateCity(int idVille, Ville villeModifiee) {
         if (villeDao.existsById((long) idVille)) {
             villeModifiee.setId((long) idVille);
             villeDao.save(villeModifiee);
@@ -76,7 +76,7 @@ public class VilleService {
      * @return la liste des villes après suppression
      */
     @Transactional
-    public List<Ville> supprimerVille(int idVille) {
+    public List<Ville> deleteCity(int idVille) {
         if (villeDao.existsById((long) idVille)) {
             villeDao.deleteById((long) idVille);
         }
@@ -89,8 +89,8 @@ public class VilleService {
      * @param n nombre de villes à récupérer
      * @return la liste des villes triées par population décroissante
      */
-    public List<Ville> getTopVillesByDepartement(String departementCode, int n) {
-        return villeDao.findTopVillesByDepartementCode(departementCode, n);
+    public List<Ville> getTopCitiesByDepartment(String departementCode, int n) {
+        return villeDao.findTopCitiesByDepartementCode(departementCode, n);
     }
 
     /**
@@ -100,7 +100,7 @@ public class VilleService {
      * @param maxPopulation population maximale
      * @return la liste des villes dans la tranche de population
      */
-    public List<Ville> getVillesByDepartementAndPopulationRange(String departementCode, int minPopulation, int maxPopulation) {
-        return villeDao.findVillesByDepartementCodeAndPopulationRange(departementCode, minPopulation, maxPopulation);
+    public List<Ville> getCitiesByDepartmentAndPopulationRange(String departementCode, int minPopulation, int maxPopulation) {
+        return villeDao.findCitiesByDepartementCodeAndPopulationRange(departementCode, minPopulation, maxPopulation);
     }
 }

@@ -22,7 +22,7 @@ public class DepartementService {
      * Récupère tous les départements.
      * @return la liste des départements
      */
-    public List<Departement> findAll() {
+    public List<Departement> getAllDepartments() {
         return departementDao.findAll();
     }
 
@@ -31,7 +31,7 @@ public class DepartementService {
      * @param id identifiant du département
      * @return le département si trouvé, null sinon
      */
-    public Departement findById(Long id) {
+    public Departement getDepartmentById(Long id) {
         return departementDao.findById(id);
     }
 
@@ -40,7 +40,7 @@ public class DepartementService {
      * @param code code du département
      * @return le département si trouvé, null sinon
      */
-    public Departement findByCode(String code) {
+    public Departement getDepartmentByCode(String code) {
         return departementDao.findByCode(code);
     }
 
@@ -50,7 +50,7 @@ public class DepartementService {
      * @return le département créé
      */
     @Transactional
-    public Departement create(Departement departement) {
+    public Departement createDepartment(Departement departement) {
         return departementDao.save(departement);
     }
 
@@ -61,7 +61,7 @@ public class DepartementService {
      * @return le département modifié, ou null si non trouvé
      */
     @Transactional
-    public Departement update(Long id, Departement departementModifie) {
+    public Departement updateDepartment(Long id, Departement departementModifie) {
         if (departementDao.existsById(id)) {
             departementModifie.setId(id);
             return departementDao.save(departementModifie);
@@ -75,7 +75,7 @@ public class DepartementService {
      * @return true si la suppression a réussi, false sinon
      */
     @Transactional
-    public boolean deleteById(Long id) {
+    public boolean deleteDepartmentById(Long id) {
         if (departementDao.existsById(id)) {
             departementDao.deleteById(id);
             return true;
@@ -88,7 +88,7 @@ public class DepartementService {
      * @param id identifiant du département
      * @return true si le département existe, false sinon
      */
-    public boolean existsById(Long id) {
+    public boolean departmentExistsById(Long id) {
         return departementDao.existsById(id);
     }
 
@@ -97,7 +97,7 @@ public class DepartementService {
      * @param code code du département
      * @return true si le département existe, false sinon
      */
-    public boolean existsByCode(String code) {
+    public boolean departmentExistsByCode(String code) {
         return departementDao.existsByCode(code);
     }
 }

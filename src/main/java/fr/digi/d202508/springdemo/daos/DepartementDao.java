@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 /**
- * DAO gérant l'accès aux données des départements via EntityManager.
+ * DAO gérant l'accès aux données des départements via EntityManager
  */
 @Repository
 @Transactional
@@ -20,7 +20,7 @@ public class DepartementDao {
     private EntityManager entityManager;
 
     /**
-     * Récupère tous les départements.
+     * Récupère tous les départements
      * @return la liste des départements
      */
     public List<Departement> findAll() {
@@ -29,7 +29,7 @@ public class DepartementDao {
     }
 
     /**
-     * Récupère un département par son identifiant.
+     * Récupère un département par son identifiant
      * @param id identifiant du département
      * @return le département si trouvé, null sinon
      */
@@ -38,7 +38,7 @@ public class DepartementDao {
     }
 
     /**
-     * Récupère un département par son code.
+     * Récupère un département par son code
      * @param code code du département
      * @return le département si trouvé, null sinon
      */
@@ -51,7 +51,7 @@ public class DepartementDao {
     }
 
     /**
-     * Vérifie si un département existe par son identifiant.
+     * Vérifie si un département existe par son identifiant
      * @param id identifiant du département
      * @return true si le département existe, false sinon
      */
@@ -60,7 +60,7 @@ public class DepartementDao {
     }
 
     /**
-     * Vérifie si un département existe par son code.
+     * Vérifie si un département existe par son code
      * @param code code du département
      * @return true si le département existe, false sinon
      */
@@ -72,7 +72,7 @@ public class DepartementDao {
     }
 
     /**
-     * Sauvegarde ou met à jour un département.
+     * Sauvegarde ou met à jour un département
      * @param departement le département à sauvegarder
      * @return le département sauvegardé
      */
@@ -86,7 +86,7 @@ public class DepartementDao {
     }
 
     /**
-     * Supprime un département par son identifiant.
+     * Supprime un département par son identifiant
      * @param id identifiant du département à supprimer
      */
     public void deleteById(Long id) {

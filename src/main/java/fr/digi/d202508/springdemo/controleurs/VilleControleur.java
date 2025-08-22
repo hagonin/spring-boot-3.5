@@ -14,7 +14,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 
 /**
- * Contrôleur REST gérant les opérations CRUD des villes via un service métier.
+ * Contrôleur REST gérant les opérations CRUD des villes via un service métier
  */
 @RestController
 @RequestMapping("/villes")
@@ -27,11 +27,11 @@ public class VilleControleur {
     private MessageSource messageSource;
 
     /**
-     * Valide la requête et retourne une réponse d'erreur le cas échéant.
+     * Valide la requête et retourne une réponse d'erreur le cas échéant
      * @param result résultat de la validation
      * @return une réponse 400 si erreurs, sinon null
      */
-    private ResponseEntity<String> validerVille(BindingResult result) {
+    private ResponseEntity<String> validateCity(BindingResult result) {
         if (result.hasErrors()) {
             StringBuilder errors = new StringBuilder();
             result.getFieldErrors().forEach(error ->
@@ -43,12 +43,12 @@ public class VilleControleur {
     }
 
     /**
-     * Récupère la liste complète des villes.
+     * Récupère la liste complète des villes
      * @return la liste des villes
      */
     @GetMapping
-    public List<Ville> getVilles() {
-        return villeService.extractVilles();
+    public List<Ville> getCities() {
+        return villeService.getAllCities();
     }
 
     /**
@@ -57,8 +57,8 @@ public class VilleControleur {
      * @return 200 avec la ville si trouvée, 404 sinon
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Ville> getVilleById(@PathVariable int id) {
-        Ville ville = villeService.extractVille(id);
+    public ResponseEntity<Ville> getCityById(@PathVariable int id) {
+        Ville ville = villeService.getCityById(id);
         if (ville != null) {
             return ResponseEntity.ok(ville);
         }
@@ -71,8 +71,8 @@ public class VilleControleur {
      * @return 200 avec la ville si trouvée, 404 sinon
      */
     @GetMapping("/nom-ville/{nom}")
-    public ResponseEntity<Ville> getVilleByNom(@PathVariable String nom) {
-        Ville ville = villeService.extractVille(nom);
+    public ResponseEntity<Ville> getCityByName(@PathVariable String nom) {
+        Ville ville = villeService.getCityByName(nom);
         if (ville != null) {
             return ResponseEntity.ok(ville);
         }
@@ -86,19 +86,19 @@ public class VilleControleur {
      * @return 201 si ajout réussi, 400 si erreurs de validation ou doublons
      */
     @PostMapping
-    public ResponseEntity<?> ajouterVille(@Valid @RequestBody Ville nouvelleVille, BindingResult result) {
-        ResponseEntity<String> validationError = validerVille(result);
+    public ResponseEntity<?> createCity(@Valid @RequestBody Ville nouvelleVille, BindingResult result) {
+        ResponseEntity<String> validationError = validateCity(result);
         if (validationError != null) {
             return validationError;
         }
         
         // Vérifier si la ville existe déjà par nom
-        if (villeService.extractVille(nouvelleVille.getNom()) != null) {
+        if (villeService.getCityByName(nouvelleVille.getNom()) != null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(messageSource.getMessage("ville.nom.exists", null, LocaleContextHolder.getLocale()));
         }
         
-        List<Ville> villes = villeService.insertVille(nouvelleVille);
+        List<Ville> villes = villeService.createCity(nouvelleVille);
         return ResponseEntity.status(HttpStatus.CREATED).body(villes);
     }
 
@@ -110,17 +110,17 @@ public class VilleControleur {
      * @return 200 si succès, 400 si erreurs de validation, 404 si la ville n'existe pas
      */
     @PutMapping("/{id}")
-    public ResponseEntity<?> modifierVille(@PathVariable int id, @Valid @RequestBody Ville villeModifiee, BindingResult result) {
-        ResponseEntity<String> validationError = validerVille(result);
+    public ResponseEntity<?> updateCity(@PathVariable int id, @Valid @RequestBody Ville villeModifiee, BindingResult result) {
+        ResponseEntity<String> validationError = validateCity(result);
         if (validationError != null) {
             return validationError;
         }
         
-        if (villeService.extractVille(id) == null) {
+        if (villeService.getCityById(id) == null) {
             return ResponseEntity.notFound().build();
         }
 
-        List<Ville> villes = villeService.modifierVille(id, villeModifiee);
+        List<Ville> villes = villeService.updateCity(id, villeModifiee);
         return ResponseEntity.ok(villes);
     }
 
@@ -130,9 +130,9 @@ public class VilleControleur {
      * @return 200 si supprimée, 404 si introuvable
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> supprimerVille(@PathVariable int id) {
-        if (villeService.extractVille(id) != null) {
-            List<Ville> villes = villeService.supprimerVille(id);
+    public ResponseEntity<?> deleteCity(@PathVariable int id) {
+        if (villeService.getCityById(id) != null) {
+            List<Ville> villes = villeService.deleteCity(id);
             return ResponseEntity.ok(villes);
         }
         return ResponseEntity.notFound().build();
@@ -145,10 +145,10 @@ public class VilleControleur {
      * @return la liste des villes triées par population décroissante
      */
     @GetMapping("/top")
-    public ResponseEntity<List<Ville>> getTopVillesByDepartement(
+    public ResponseEntity<List<Ville>> getTopCitiesByDepartment(
             @RequestParam String departementCode, 
             @RequestParam int n) {
-        List<Ville> villes = villeService.getTopVillesByDepartement(departementCode, n);
+        List<Ville> villes = villeService.getTopCitiesByDepartment(departementCode, n);
         return ResponseEntity.ok(villes);
     }
 
@@ -160,11 +160,11 @@ public class VilleControleur {
      * @return la liste des villes dans la tranche de population
      */
     @GetMapping("/by-population")
-    public ResponseEntity<List<Ville>> getVillesByPopulationRange(
+    public ResponseEntity<List<Ville>> getCitiesByPopulationRange(
             @RequestParam String departementCode,
             @RequestParam int min,
             @RequestParam int max) {
-        List<Ville> villes = villeService.getVillesByDepartementAndPopulationRange(departementCode, min, max);
+        List<Ville> villes = villeService.getCitiesByDepartmentAndPopulationRange(departementCode, min, max);
         return ResponseEntity.ok(villes);
     }
 }
