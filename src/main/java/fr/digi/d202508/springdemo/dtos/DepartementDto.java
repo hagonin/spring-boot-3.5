@@ -2,6 +2,7 @@ package fr.digi.d202508.springdemo.dtos;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import java.util.List;
 
 /**
  * DTO pour la représentation des départements dans les échanges API
@@ -18,15 +19,18 @@ public class DepartementDto {
     private String nom;
     
     private Integer population;
+    
+    private List<String> villes;
 
     public DepartementDto() {
     }
 
-    public DepartementDto(Long id, String code, String nom, Integer population) {
+    public DepartementDto(Long id, String code, String nom, Integer population, List<String> villes) {
         this.id = id;
         this.code = code;
         this.nom = nom;
         this.population = population;
+        this.villes = villes;
     }
 
     public Long getId() {
@@ -61,6 +65,14 @@ public class DepartementDto {
         this.population = population;
     }
 
+    public List<String> getVilles() {
+        return villes;
+    }
+
+    public void setVilles(List<String> villes) {
+        this.villes = villes;
+    }
+
     @Override
     public String toString() {
         return "DepartementDto{" +
@@ -68,6 +80,7 @@ public class DepartementDto {
                 ", code='" + code + '\'' +
                 ", nom='" + nom + '\'' +
                 ", population=" + population +
+                ", villes=" + villes +
                 '}';
     }
 }

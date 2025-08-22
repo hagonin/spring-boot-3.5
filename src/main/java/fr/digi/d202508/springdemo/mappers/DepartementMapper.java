@@ -24,17 +24,24 @@ public class DepartementMapper {
         }
         
         Integer population = null;
+        List<String> nomVilles = null;
+        
         if (departement.getVilles() != null) {
             population = departement.getVilles().stream()
                     .mapToInt(ville -> ville.getPopulation() != null ? ville.getPopulation() : 0)
                     .sum();
+            
+            nomVilles = departement.getVilles().stream()
+                    .map(ville -> ville.getNom())
+                    .collect(Collectors.toList());
         }
         
         return new DepartementDto(
             departement.getId(),
             departement.getCode(),
             departement.getNom(),
-            population
+            population,
+            nomVilles
         );
     }
 
