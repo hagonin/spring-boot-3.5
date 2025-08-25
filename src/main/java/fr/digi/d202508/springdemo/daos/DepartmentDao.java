@@ -1,6 +1,6 @@
 package fr.digi.d202508.springdemo.daos;
 
-import fr.digi.d202508.springdemo.entities.Departement;
+import fr.digi.d202508.springdemo.entities.Department;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -14,7 +14,7 @@ import java.util.List;
  */
 @Repository
 @Transactional
-public class DepartementDao {
+public class DepartmentDao {
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -23,8 +23,8 @@ public class DepartementDao {
      * Récupère tous les départements
      * @return la liste des départements
      */
-    public List<Departement> findAll() {
-        TypedQuery<Departement> query = entityManager.createQuery("SELECT d FROM Departement d", Departement.class);
+    public List<Department> findAll() {
+        TypedQuery<Department> query = entityManager.createQuery("SELECT d FROM Department d", Department.class);
         return query.getResultList();
     }
 
@@ -33,8 +33,8 @@ public class DepartementDao {
      * @param id identifiant du département
      * @return le département si trouvé, null sinon
      */
-    public Departement findById(Long id) {
-        return entityManager.find(Departement.class, id);
+    public Department findById(Long id) {
+        return entityManager.find(Department.class, id);
     }
 
     /**
@@ -42,11 +42,11 @@ public class DepartementDao {
      * @param code code du département
      * @return le département si trouvé, null sinon
      */
-    public Departement findByCode(String code) {
-        TypedQuery<Departement> query = entityManager.createQuery(
-            "SELECT d FROM Departement d WHERE d.code = :code", Departement.class);
+    public Department findByCode(String code) {
+        TypedQuery<Department> query = entityManager.createQuery(
+            "SELECT d FROM Department d WHERE d.code = :code", Department.class);
         query.setParameter("code", code);
-        List<Departement> results = query.getResultList();
+        List<Department> results = query.getResultList();
         return results.isEmpty() ? null : results.get(0);
     }
 
@@ -66,7 +66,7 @@ public class DepartementDao {
      */
     public boolean existsByCode(String code) {
         TypedQuery<Long> query = entityManager.createQuery(
-            "SELECT COUNT(d) FROM Departement d WHERE d.code = :code", Long.class);
+            "SELECT COUNT(d) FROM Department d WHERE d.code = :code", Long.class);
         query.setParameter("code", code);
         return query.getSingleResult() > 0;
     }
@@ -76,12 +76,12 @@ public class DepartementDao {
      * @param departement le département à sauvegarder
      * @return le département sauvegardé
      */
-    public Departement save(Departement departement) {
-        if (departement.getId() == null) {
-            entityManager.persist(departement);
-            return departement;
+    public Department save(Department department) {
+        if (department.getId() == null) {
+            entityManager.persist(department);
+            return department;
         } else {
-            return entityManager.merge(departement);
+            return entityManager.merge(department);
         }
     }
 
@@ -90,9 +90,9 @@ public class DepartementDao {
      * @param id identifiant du département à supprimer
      */
     public void deleteById(Long id) {
-        Departement departement = findById(id);
-        if (departement != null) {
-            entityManager.remove(departement);
+        Department department = findById(id);
+        if (department != null) {
+            entityManager.remove(department);
         }
     }
 }

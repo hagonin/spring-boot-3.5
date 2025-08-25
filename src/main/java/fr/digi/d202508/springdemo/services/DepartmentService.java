@@ -1,9 +1,9 @@
 package fr.digi.d202508.springdemo.services;
 
-import fr.digi.d202508.springdemo.daos.DepartementDao;
-import fr.digi.d202508.springdemo.dtos.DepartementDto;
-import fr.digi.d202508.springdemo.entities.Departement;
-import fr.digi.d202508.springdemo.mappers.DepartementMapper;
+import fr.digi.d202508.springdemo.daos.DepartmentDao;
+import fr.digi.d202508.springdemo.dtos.DepartmentDto;
+import fr.digi.d202508.springdemo.entities.Department;
+import fr.digi.d202508.springdemo.mappers.DepartmentMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,20 +15,20 @@ import java.util.List;
  */
 @Service
 @Transactional(readOnly = true)
-public class DepartementService {
+public class DepartmentService {
 
     @Autowired
-    private DepartementDao departementDao;
+    private DepartmentDao departementDao;
     
     @Autowired
-    private DepartementMapper departementMapper;
+    private DepartmentMapper departementMapper;
 
     /**
      * Récupère tous les départements.
      * @return la liste des DTOs des départements
      */
-    public List<DepartementDto> getAllDepartments() {
-        List<Departement> departements = departementDao.findAll();
+    public List<DepartmentDto> getAllDepartments() {
+        List<Department> departements = departementDao.findAll();
         return departementMapper.toDtoList(departements);
     }
 
@@ -37,8 +37,8 @@ public class DepartementService {
      * @param id identifiant du département
      * @return le DTO du département si trouvé, null sinon
      */
-    public DepartementDto getDepartmentById(Long id) {
-        Departement departement = departementDao.findById(id);
+    public DepartmentDto getDepartmentById(Long id) {
+        Department departement = departementDao.findById(id);
         return departementMapper.toDto(departement);
     }
 
@@ -47,8 +47,8 @@ public class DepartementService {
      * @param code code du département
      * @return le DTO du département si trouvé, null sinon
      */
-    public DepartementDto getDepartmentByCode(String code) {
-        Departement departement = departementDao.findByCode(code);
+    public DepartmentDto getDepartmentByCode(String code) {
+        Department departement = departementDao.findByCode(code);
         return departementMapper.toDto(departement);
     }
 
@@ -58,9 +58,9 @@ public class DepartementService {
      * @return le DTO du département créé
      */
     @Transactional
-    public DepartementDto createDepartment(DepartementDto departementDto) {
-        Departement departement = departementMapper.toEntity(departementDto);
-        Departement departementSauve = departementDao.save(departement);
+    public DepartmentDto createDepartment(DepartmentDto departementDto) {
+        Department departement = departementMapper.toEntity(departementDto);
+        Department departementSauve = departementDao.save(departement);
         return departementMapper.toDto(departementSauve);
     }
 
@@ -71,14 +71,14 @@ public class DepartementService {
      * @return le DTO du département modifié, ou null si non trouvé
      */
     @Transactional
-    public DepartementDto updateDepartment(Long id, DepartementDto departementDto) {
-        Departement departementExistant = departementDao.findById(id);
+    public DepartmentDto updateDepartment(Long id, DepartmentDto departementDto) {
+        Department departementExistant = departementDao.findById(id);
         if (departementExistant == null) {
             return null;
         }
         
         departementMapper.updateEntityFromDto(departementDto, departementExistant);
-        Departement departementMisAJour = departementDao.save(departementExistant);
+        Department departementMisAJour = departementDao.save(departementExistant);
         return departementMapper.toDto(departementMisAJour);
     }
 

@@ -11,7 +11,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "departement")
-public class Departement {
+public class Department {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,14 +24,14 @@ public class Departement {
     @NotBlank(message = "{departement.nom.notblank}")
     private String nom;
 
-    @OneToMany(mappedBy = "departement", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "department", fetch = FetchType.LAZY)
     @JsonManagedReference
-    private List<Ville> villes;
+    private List<City> cities;
 
-    public Departement() {
+    public Department() {
     }
 
-    public Departement(String code, String nom) {
+    public Department(String code, String nom) {
         this.code = code;
         this.nom = nom;
     }
@@ -60,11 +60,11 @@ public class Departement {
         this.nom = nom;
     }
 
-    public List<Ville> getVilles() {
-        return villes;
+    public List<City> getCities() {
+        return cities;
     }
 
-    public void setVilles(List<Ville> villes) {
-        this.villes = villes;
+    public void setCities(List<City> cities) {
+        this.cities = cities;
     }
 }

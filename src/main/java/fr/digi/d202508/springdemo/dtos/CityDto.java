@@ -7,27 +7,27 @@ import jakarta.validation.constraints.NotNull;
 /**
  * DTO pour la représentation des villes dans les échanges API
  */
-public class VilleDto {
+public class CityDto {
     
     private Long id;
 
     @NotBlank(message = "{ville.nom.notblank}")
-    private String nom;
+    private String name;
     
     @Min(value = 0, message = "{ville.population.min}")
     private Integer population;
     
     @NotNull(message = "{ville.departement.required}")
-    private String codeDepartement;
+    private String departmentCode;
 
-    public VilleDto() {
+    public CityDto() {
     }
 
-    public VilleDto(Long id, String nom, Integer population, String codeDepartement) {
+    public CityDto(Long id, String name, Integer population, String departmentCode) {
         this.id = id;
-        this.nom = nom;
+        this.name = name;
         this.population = population;
-        this.codeDepartement = codeDepartement;
+        this.departmentCode = departmentCode;
     }
 
     public Long getId() {
@@ -38,12 +38,12 @@ public class VilleDto {
         this.id = id;
     }
 
-    public String getNom() {
-        return nom;
+    public String getName() {
+        return name;
     }
 
-    public void setNom(String nom) {
-        this.nom = nom;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Integer getPopulation() {
@@ -54,21 +54,21 @@ public class VilleDto {
         this.population = population;
     }
 
-    public String getCodeDepartement() {
-        return codeDepartement;
+    public String getDepartmentCode() {
+        return departmentCode;
     }
 
-    public void setCodeDepartement(String codeDepartement) {
-        this.codeDepartement = codeDepartement;
+    public void setDepartmentCode(String departmentCode) {
+        this.departmentCode = departmentCode;
     }
 
     @Override
     public String toString() {
-        return "VilleDto{" +
+        return "CityDto{" +
                 "id=" + id +
-                ", nom='" + nom + '\'' +
+                ", name='" + name + '\'' +
                 ", population=" + population +
-                ", codeDepartement='" + codeDepartement + '\'' +
+                ", departmentCode='" + departmentCode + '\'' +
                 '}';
     }
 }

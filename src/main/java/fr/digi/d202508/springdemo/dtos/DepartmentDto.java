@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * DTO pour la représentation des départements dans les échanges API
  */
-public class DepartementDto {
+public class DepartmentDto {
     
     private Long id;
     
@@ -16,21 +16,21 @@ public class DepartementDto {
     private String code;
     
     @NotBlank(message = "{departement.nom.notblank}")
-    private String nom;
+    private String name;
     
     private Integer population;
     
-    private List<String> villes;
+    private List<String> cities;
 
-    public DepartementDto() {
+    public DepartmentDto() {
     }
 
-    public DepartementDto(Long id, String code, String nom, Integer population, List<String> villes) {
+    public DepartmentDto(Long id, String code, String name, Integer population, List<String> cities) {
         this.id = id;
         this.code = code;
-        this.nom = nom;
+        this.name = name;
         this.population = population;
-        this.villes = villes;
+        this.cities = cities;
     }
 
     public Long getId() {
@@ -49,12 +49,12 @@ public class DepartementDto {
         this.code = code;
     }
 
-    public String getNom() {
-        return nom;
+    public String getName() {
+        return name;
     }
 
-    public void setNom(String nom) {
-        this.nom = nom;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Integer getPopulation() {
@@ -65,22 +65,22 @@ public class DepartementDto {
         this.population = population;
     }
 
-    public List<String> getVilles() {
-        return villes;
+    public List<String> getCities() {
+        return cities;
     }
 
-    public void setVilles(List<String> villes) {
-        this.villes = villes;
+    public void setCities(List<String> cities) {
+        this.cities = cities;
     }
 
     @Override
     public String toString() {
-        return "DepartementDto{" +
+        return "DepartmentDto{" +
                 "id=" + id +
                 ", code='" + code + '\'' +
-                ", nom='" + nom + '\'' +
+                ", name='" + name + '\'' +
                 ", population=" + population +
-                ", villes=" + villes +
+                ", cities=" + cities +
                 '}';
     }
 }

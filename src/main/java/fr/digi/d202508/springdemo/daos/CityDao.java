@@ -1,6 +1,6 @@
 package fr.digi.d202508.springdemo.daos;
 
-import fr.digi.d202508.springdemo.entities.Ville;
+import fr.digi.d202508.springdemo.entities.City;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -14,7 +14,7 @@ import java.util.List;
  */
 @Repository
 @Transactional
-public class VilleDao {
+public class CityDao {
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -23,8 +23,8 @@ public class VilleDao {
      * Récupère toutes les villes
      * @return la liste des villes
      */
-    public List<Ville> findAll() {
-        TypedQuery<Ville> query = entityManager.createQuery("SELECT v FROM Ville v", Ville.class);
+    public List<City> findAll() {
+        TypedQuery<City> query = entityManager.createQuery("SELECT v FROM City v", City.class);
         return query.getResultList();
     }
 
@@ -33,8 +33,8 @@ public class VilleDao {
      * @param id identifiant de la ville
      * @return la ville si trouvée, null sinon
      */
-    public Ville findById(Long id) {
-        return entityManager.find(Ville.class, id);
+    public City findById(Long id) {
+        return entityManager.find(City.class, id);
     }
 
     /**
@@ -42,11 +42,11 @@ public class VilleDao {
      * @param nom nom de la ville
      * @return la ville si trouvée, null sinon
      */
-    public Ville findByName(String nom) {
-        TypedQuery<Ville> query = entityManager.createQuery(
-            "SELECT v FROM Ville v WHERE LOWER(v.nom) = LOWER(:nom)", Ville.class);
-        query.setParameter("nom", nom);
-        List<Ville> results = query.getResultList();
+    public City findByName(String name) {
+        TypedQuery<City> query = entityManager.createQuery(
+            "SELECT v FROM City v WHERE LOWER(v.name) = LOWER(:name)", City.class);
+        query.setParameter("name", name);
+        List<City> results = query.getResultList();
         return results.isEmpty() ? null : results.get(0);
     }
 
@@ -55,10 +55,10 @@ public class VilleDao {
      * @param nom nom de la ville
      * @return true si la ville existe, false sinon
      */
-    public boolean existsByNom(String nom) {
+    public boolean existsByName(String name) {
         TypedQuery<Long> query = entityManager.createQuery(
-            "SELECT COUNT(v) FROM Ville v WHERE LOWER(v.nom) = LOWER(:nom)", Long.class);
-        query.setParameter("nom", nom);
+            "SELECT COUNT(v) FROM City v WHERE LOWER(v.name) = LOWER(:name)", Long.class);
+        query.setParameter("name", name);
         return query.getSingleResult() > 0;
     }
 
@@ -76,12 +76,12 @@ public class VilleDao {
      * @param ville la ville à sauvegarder
      * @return la ville sauvegardée
      */
-    public Ville save(Ville ville) {
-        if (ville.getId() == null) {
-            entityManager.persist(ville);
-            return ville;
+    public City save(City city) {
+        if (city.getId() == null) {
+            entityManager.persist(city);
+            return city;
         } else {
-            return entityManager.merge(ville);
+            return entityManager.merge(city);
         }
     }
 
@@ -90,9 +90,9 @@ public class VilleDao {
      * @param id identifiant de la ville à supprimer
      */
     public void deleteById(Long id) {
-        Ville ville = findById(id);
-        if (ville != null) {
-            entityManager.remove(ville);
+        City city = findById(id);
+        if (city != null) {
+            entityManager.remove(city);
         }
     }
 
@@ -102,10 +102,10 @@ public class VilleDao {
      * @param n nombre de villes à récupérer
      * @return la liste des villes triées par population décroissante
      */
-    public List<Ville> findTopCitiesByDepartementCode(String departementCode, int n) {
-        TypedQuery<Ville> query = entityManager.createQuery(
-            "SELECT v FROM Ville v WHERE v.departement.code = :code ORDER BY v.population DESC", Ville.class);
-        query.setParameter("code", departementCode);
+    public List<City> findTopCitiesByDepartmentCode(String departmentCode, int n) {
+        TypedQuery<City> query = entityManager.createQuery(
+            "SELECT v FROM City v WHERE v.department.code = :code ORDER BY v.population DESC", City.class);
+        query.setParameter("code", departmentCode);
         query.setMaxResults(n);
         return query.getResultList();
     }
@@ -117,10 +117,10 @@ public class VilleDao {
      * @param maxPopulation population maximale
      * @return la liste des villes dans la tranche de population
      */
-    public List<Ville> findCitiesByDepartementCodeAndPopulationRange(String departementCode, int minPopulation, int maxPopulation) {
-        TypedQuery<Ville> query = entityManager.createQuery(
-            "SELECT v FROM Ville v WHERE v.departement.code = :code AND v.population >= :min AND v.population <= :max ORDER BY v.population DESC", Ville.class);
-        query.setParameter("code", departementCode);
+    public List<City> findCitiesByDepartmentCodeAndPopulationRange(String departmentCode, int minPopulation, int maxPopulation) {
+        TypedQuery<City> query = entityManager.createQuery(
+            "SELECT v FROM City v WHERE v.department.code = :code AND v.population >= :min AND v.population <= :max ORDER BY v.population DESC", City.class);
+        query.setParameter("code", departmentCode);
         query.setParameter("min", minPopulation);
         query.setParameter("max", maxPopulation);
         return query.getResultList();

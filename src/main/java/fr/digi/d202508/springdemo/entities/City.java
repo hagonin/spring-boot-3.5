@@ -7,19 +7,19 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 /**
- * Entité JPA représentant une ville avec validation des champs pour les opérations REST.
+ * Entité JPA représentant une ville avec validation des champs pour les opérations REST
  */
 @Entity
 @Table(name = "ville")
-public class Ville {
+public class City {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
     @NotBlank(message = "{ville.nom.notblank}")
-    @Column(nullable = false)
-    private String nom;
+    @Column(name = "nom", nullable = false)
+    private String name;
     
     @Min(value = 0, message = "{ville.population.min}")
     @Column(name = "nb_habs", nullable = false)
@@ -29,15 +29,15 @@ public class Ville {
     @JoinColumn(name = "id_dept", nullable = false)
     @NotNull(message = "{ville.departement.required}")
     @JsonBackReference
-    private Departement departement;
+    private Department department;
 
-    public Ville() {
+    public City() {
     }
 
-    public Ville(String nom, Integer population, Departement departement) {
-        this.nom = nom;
+    public City(String name, Integer population, Department department) {
+        this.name = name;
         this.population = population;
-        this.departement = departement;
+        this.department = department;
     }
 
     public Long getId() {
@@ -48,12 +48,12 @@ public class Ville {
         this.id = id;
     }
 
-    public String getNom() {
-        return nom;
+    public String getName() {
+        return name;
     }
 
-    public void setNom(String nom) {
-        this.nom = nom;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Integer getPopulation() {
@@ -64,11 +64,11 @@ public class Ville {
         this.population = population;
     }
 
-    public Departement getDepartement() {
-        return departement;
+    public Department getDepartment() {
+        return department;
     }
 
-    public void setDepartement(Departement departement) {
-        this.departement = departement;
+    public void setDepartment(Department department) {
+        this.department = department;
     }
 }
