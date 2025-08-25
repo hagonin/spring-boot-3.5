@@ -45,79 +45,79 @@ public class DepartmentController {
     }
 
     /**
-     * Récupère un département par son identifiant.
+     * Récupère un département par son identifiant
      * @param id identifiant du département
      * @return 200 avec le département si trouvé, 404 sinon
      */
     @GetMapping("/{id}")
     public ResponseEntity<DepartmentDto> getDepartmentById(@PathVariable Long id) {
-        DepartmentDto departement = departmentService.getDepartmentById(id);
-        if (departement != null) {
-            return ResponseEntity.ok(departement);
+        DepartmentDto department = departmentService.getDepartmentById(id);
+        if (department != null) {
+            return ResponseEntity.ok(department);
         }
         return ResponseEntity.notFound().build();
     }
 
     /**
-     * Récupère un département par son code.
+     * Récupère un département par son code
      * @param code code du département
      * @return 200 avec le département si trouvé, 404 sinon
      */
-    @GetMapping("/code-departement/{code}")
+    @GetMapping("/code-department/{code}")
     public ResponseEntity<DepartmentDto> getDepartmentByCode(@PathVariable String code) {
-        DepartmentDto departement = departmentService.getDepartmentByCode(code);
-        if (departement != null) {
-            return ResponseEntity.ok(departement);
+        DepartmentDto department = departmentService.getDepartmentByCode(code);
+        if (department != null) {
+            return ResponseEntity.ok(department);
         }
         return ResponseEntity.notFound().build();
     }
 
     /**
-     * Ajoute un nouveau département après validation.
-     * @param nouveauDepartement le département à ajouter
+     * Ajoute un nouveau département après validation
+     * @param newDepartment le département à ajouter
      * @param result résultat de la validation de la requête
      * @return 201 si ajout réussi, 400 si erreurs de validation ou doublons
      */
     @PostMapping
-    public ResponseEntity<?> createDepartment(@Valid @RequestBody DepartmentDto nouveauDepartement, BindingResult result) {
+    public ResponseEntity<?> createDepartment(@Valid @RequestBody DepartmentDto newDepartment, BindingResult result) {
         ResponseEntity<String> validationError = validateDepartment(result);
         if (validationError != null) {
             return validationError;
         }
         
         // Vérifier si le département existe déjà par code
-        if (departmentService.departmentExistsByCode(nouveauDepartement.getCode())) {
+        if (departmentService.departmentExistsByCode(newDepartment.getCode())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body("Un département avec ce code existe déjà");
         }
         
-        DepartmentDto departementCree = departmentService.createDepartment(nouveauDepartement);
-        return ResponseEntity.status(HttpStatus.CREATED).body(departementCree);
+        DepartmentDto departmentCreated = departmentService.createDepartment(newDepartment);
+        return ResponseEntity.status(HttpStatus.CREATED).body(departmentCreated);
     }
 
     /**
-     * Met à jour un département existant.
+     * Met à jour un département existant
      * @param id identifiant du département à modifier
-     * @param departementModifie nouvelle représentation du département
+     * @param departmentModified nouvelle représentation du département
      * @param result résultat de la validation
      * @return 200 si succès, 400 si erreurs de validation, 404 si le département n'existe pas
      */
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateDepartment(@PathVariable Long id, @Valid @RequestBody DepartmentDto departementModifie, BindingResult result) {
+    public ResponseEntity<?> updateDepartment(@PathVariable Long id, @Valid @RequestBody DepartmentDto departmentModified, BindingResult result) {
         ResponseEntity<String> validationError = validateDepartment(result);
         if (validationError != null) {
             return validationError;
         }
         
-        DepartmentDto departementMisAJour = departmentService.updateDepartment(id, departementModifie);
-        if (departementMisAJour != null) {
-            return ResponseEntity.ok(departementMisAJour);
+        DepartmentDto departmentUpdated = departmentService.updateDepartment(id, departmentModified);
+        if (departmentUpdated!= null) {
+            return ResponseEntity.ok(departmentUpdated);
         }
         return ResponseEntity.notFound().build();
     }
 
     /**
-     * Supprime un département par son identifiant.
+     * Supprime un département par son identifiant
      * @param id identifiant du département à supprimer
      * @return 200 si supprimé, 404 si introuvable
      */

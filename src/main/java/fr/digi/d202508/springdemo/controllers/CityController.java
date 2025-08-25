@@ -67,7 +67,7 @@ public class CityController {
      * @param name nom de la ville
      * @return 200 avec la ville si trouvée, 404 sinon
      */
-    @GetMapping("/name/{name}")
+    @GetMapping("/city-name/{name}")
     public ResponseEntity<CityDto> getCityByName(@PathVariable String name) {
         CityDto city = cityService.getCityByName(name);
         if (city != null) {
@@ -139,8 +139,8 @@ public class CityController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteCity(@PathVariable int id) {
-        boolean supprimee = cityService.deleteCity(id);
-        if (supprimee) {
+        boolean removed = cityService.deleteCity(id);
+        if (removed) {
             return ResponseEntity.ok("Ville supprimée avec succès");
         }
         return ResponseEntity.notFound().build();
@@ -216,89 +216,89 @@ public class CityController {
 
     /**
      * Recherche toutes les villes d'un département (par ID) dont la population est supérieure à un minimum
-     * @param departementId l'ID du département
+     * @param departmentId l'ID du département
      * @param minPopulation la population minimum
      * @return la liste des villes triées par population décroissante
      */
-    @GetMapping("/departement/{departementId}/population-min")
+    @GetMapping("/department/{departmentId}/population-min")
     public ResponseEntity<List<CityDto>> getCitiesByDepartmentAndMinPopulation(
-            @PathVariable Long departementId, 
+            @PathVariable Long departmentId,
             @RequestParam int minPopulation) {
-        List<CityDto> cities = cityService.getCitiesByDepartmentAndMinPopulation(departementId, minPopulation);
+        List<CityDto> cities = cityService.getCitiesByDepartmentAndMinPopulation(departmentId, minPopulation);
         return ResponseEntity.ok(cities);
     }
 
     /**
      * Recherche toutes les villes d'un département (par ID) dont la population est comprise entre min et max
-     * @param departementId l'ID du département
+     * @param departmentId l'ID du département
      * @param minPopulation la population minimum (inclusive)
      * @param maxPopulation la population maximum (inclusive)
      * @return la liste des villes triées par population décroissante
      */
     @GetMapping("/departement/{departementId}/population-between")
     public ResponseEntity<List<CityDto>> getCitiesByDepartmentAndPopulationBetween(
-            @PathVariable Long departementId,
+            @PathVariable Long departmentId,
             @RequestParam int minPopulation,
             @RequestParam int maxPopulation) {
-        List<CityDto> cities = cityService.getCitiesByDepartmentAndPopulationBetween(departementId, minPopulation, maxPopulation);
+        List<CityDto> cities = cityService.getCitiesByDepartmentAndPopulationBetween(departmentId, minPopulation, maxPopulation);
         return ResponseEntity.ok(cities);
     }
 
     /**
      * Recherche les n villes les plus peuplées d'un département donné (par ID)
-     * @param departementId l'ID du département
+     * @param departmentId l'ID du département
      * @param limit le nombre maximum de villes à retourner
      * @return la liste des villes triées par population décroissante
      */
-    @GetMapping("/departement/{departementId}/top-cities")
+    @GetMapping("/department/{departmentId}/top-cities")
     public ResponseEntity<List<CityDto>> getTopCitiesByDepartmentId(
-            @PathVariable Long departementId, 
+            @PathVariable Long departmentId,
             @RequestParam int limit) {
-        List<CityDto> cities = cityService.getTopCitiesByDepartmentId(departementId, limit);
+        List<CityDto> cities = cityService.getTopCitiesByDepartmentId(departmentId, limit);
         return ResponseEntity.ok(cities);
     }
 
     /**
      * Recherche par code de département avec population minimum
-     * @param departementCode le code du département
+     * @param departmentCode le code du département
      * @param minPopulation la population minimum
      * @return la liste des villes correspondantes
      */
-    @GetMapping("/code/{departementCode}/population-min")
+    @GetMapping("/code/{departmentCode}/population-min")
     public ResponseEntity<List<CityDto>> getCitiesByDepartmentCodeAndMinPopulation(
-            @PathVariable String departementCode, 
+            @PathVariable String departmentCode,
             @RequestParam int minPopulation) {
-        List<CityDto> cities = cityService.getCitiesByDepartmentCodeAndMinPopulation(departementCode, minPopulation);
+        List<CityDto> cities = cityService.getCitiesByDepartmentCodeAndMinPopulation(departmentCode, minPopulation);
         return ResponseEntity.ok(cities);
     }
 
     /**
      * Recherche par code de département avec population entre min et max
-     * @param departementCode le code du département
+     * @param departmentCode le code du département
      * @param minPopulation la population minimum (inclusive)
      * @param maxPopulation la population maximum (inclusive)
      * @return la liste des villes correspondantes
      */
-    @GetMapping("/code/{departementCode}/population-between")
+    @GetMapping("/code/{departmentCode}/population-between")
     public ResponseEntity<List<CityDto>> getCitiesByDepartmentCodeAndPopulationBetween(
-            @PathVariable String departementCode,
+            @PathVariable String departmentCode,
             @RequestParam int minPopulation,
             @RequestParam int maxPopulation) {
-        List<CityDto> cities = cityService.getCitiesByDepartmentCodeAndPopulationBetween(departementCode, minPopulation, maxPopulation);
+        List<CityDto> cities = cityService.getCitiesByDepartmentCodeAndPopulationBetween(departmentCode, minPopulation, maxPopulation);
         return ResponseEntity.ok(cities);
     }
 
     /**
      * Recherche les n villes les plus peuplées d'un département par son code
-     * @param departementCode le code du département
+     * @param departmentCode le code du département
      * @param limit le nombre maximum de villes à retourner
      * @return la liste des villes correspondantes
      */
-    @GetMapping("/code/{departementCode}/top-cities")
+    @GetMapping("/code/{departmentCode}/top-cities")
     public ResponseEntity<List<CityDto>> getTopCitiesByDepartmentCode(
-            @PathVariable String departementCode, 
+            @PathVariable String departmentCode,
             @RequestParam int limit) {
-        List<CityDto> cities = cityService.getTopCitiesByDepartmentCode(departementCode, limit);
+        List<CityDto> cities = cityService.getTopCitiesByDepartmentCode(departmentCode, limit);
         return ResponseEntity.ok(cities);
     }
 
