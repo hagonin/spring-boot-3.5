@@ -9,9 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-/**
- * DAO gérant l'accès aux données des villes via EntityManager
- */
+
 @Repository
 @Transactional
 public class CityDao {
@@ -39,7 +37,7 @@ public class CityDao {
 
     /**
      * Récupère une ville par son nom
-     * @param nom nom de la ville
+     * @param name nom de la ville
      * @return la ville si trouvée, null sinon
      */
     public City findByName(String name) {
@@ -52,7 +50,7 @@ public class CityDao {
 
     /**
      * Vérifie si une ville existe par son nom
-     * @param nom nom de la ville
+     * @param name nom de la ville
      * @return true si la ville existe, false sinon
      */
     public boolean existsByName(String name) {
@@ -73,7 +71,7 @@ public class CityDao {
 
     /**
      * Sauvegarde ou met à jour une ville
-     * @param ville la ville à sauvegarder
+     * @param city la ville à sauvegarder
      * @return la ville sauvegardée
      */
     public City save(City city) {
@@ -98,7 +96,7 @@ public class CityDao {
 
     /**
      * Récupère les N villes les plus peuplées d'un département
-     * @param departementCode code du département
+     * @param departmentCode code du département
      * @param n nombre de villes à récupérer
      * @return la liste des villes triées par population décroissante
      */
@@ -112,7 +110,7 @@ public class CityDao {
 
     /**
      * Récupère les villes d'un département dans une tranche de population
-     * @param departementCode code du département
+     * @param departmentCode code du département
      * @param minPopulation population minimale
      * @param maxPopulation population maximale
      * @return la liste des villes dans la tranche de population

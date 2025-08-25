@@ -6,9 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 
 import java.util.List;
 
-/**
- * Entité JPA représentant un département.
- */
+
 @Entity
 @Table(name = "departement")
 public class Department {

@@ -14,9 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Service gérant la logique métier des opérations sur les villes.
- */
+
 @Service
 @Transactional(readOnly = true)
 public class CityService {
@@ -34,7 +32,7 @@ public class CityService {
     private CityMapper cityMapper;
 
     /**
-     * Extrait et retourne la liste de toutes les villes.
+     * Extrait et retourne la liste de toutes les villes
      * @return la liste des DTOs des villes
      */
     public List<CityDto> getAllCities() {
@@ -43,7 +41,7 @@ public class CityService {
     }
 
     /**
-     * Récupère une ville par son identifiant.
+     * Récupère une ville par son identifiant
      * @param cityId identifiant de la ville
      * @return le DTO de la ville si trouvée, null sinon
      */
@@ -53,7 +51,7 @@ public class CityService {
     }
 
     /**
-     * Récupère une ville par son nom.
+     * Récupère une ville par son nom
      * @param name nom de la ville
      * @return le DTO de la ville si trouvée, null sinon
      */
@@ -63,8 +61,8 @@ public class CityService {
     }
 
     /**
-     * Insère une nouvelle ville et retourne le DTO de la ville créée.
-     * @param villeDto le DTO de la ville à insérer
+     * Insère une nouvelle ville et retourne le DTO de la ville créée
+     * @param cityDto le DTO de la ville à insérer
      * @return le DTO de la ville créée
      */
     @Transactional
@@ -80,7 +78,7 @@ public class CityService {
     }
 
     /**
-     * Modifie une ville par son identifiant et retourne le DTO de la ville mise à jour.
+     * Modifie une ville par son identifiant et retourne le DTO de la ville mise à jour
      * @param cityId identifiant de la ville à modifier
      * @param cityDto nouvelle représentation de la ville
      * @return le DTO de la ville mise à jour, null si non trouvée
@@ -118,7 +116,7 @@ public class CityService {
 
     /**
      * Récupère les N villes les plus peuplées d'un département.
-     * @param departementCode code du département
+     * @param departmentCode code du département
      * @param n nombre de villes à récupérer
      * @return la liste des DTOs des villes triées par population décroissante
      */
@@ -129,7 +127,7 @@ public class CityService {
 
     /**
      * Récupère les villes d'un département dans une tranche de population.
-     * @param departementCode code du département
+     * @param departmentCode code du département
      * @param minPopulation population minimale
      * @param maxPopulation population maximale
      * @return la liste des DTOs des villes dans la tranche de population
@@ -174,7 +172,7 @@ public class CityService {
 
     /**
      * Recherche toutes les villes d'un département dont la population est supérieure à un minimum.
-     * @param departementId l'ID du département
+     * @param departmentId l'ID du département
      * @param minPopulation la population minimum
      * @return la liste des DTOs des villes triées par population décroissante
      */
@@ -185,7 +183,7 @@ public class CityService {
 
     /**
      * Recherche toutes les villes d'un département dont la population est comprise entre min et max.
-     * @param departementId l'ID du département
+     * @param departmentId l'ID du département
      * @param minPopulation la population minimum (inclusive)
      * @param maxPopulation la population maximum (inclusive)
      * @return la liste des DTOs des villes triées par population décroissante
@@ -197,7 +195,7 @@ public class CityService {
 
     /**
      * Recherche les n villes les plus peuplées d'un département donné par ID.
-     * @param departementId l'ID du département
+     * @param departmentId l'ID du département
      * @param limit le nombre maximum de villes à retourner
      * @return la liste des DTOs des villes triées par population décroissante
      */
@@ -208,7 +206,7 @@ public class CityService {
 
     /**
      * Recherche par code de département avec population minimum (utilisant Repository).
-     * @param departementCode le code du département
+     * @param departmentCode le code du département
      * @param minPopulation la population minimum
      * @return la liste des DTOs des villes correspondantes
      */
@@ -219,7 +217,7 @@ public class CityService {
 
     /**
      * Recherche par code de département avec population entre min et max (utilisant Repository).
-     * @param departementCode le code du département
+     * @param departmentCode le code du département
      * @param minPopulation la population minimum (inclusive)
      * @param maxPopulation la population maximum (inclusive)
      * @return la liste des DTOs des villes correspondantes
@@ -231,7 +229,7 @@ public class CityService {
 
     /**
      * Recherche les n villes les plus peuplées d'un département par son code (utilisant Repository).
-     * @param departementCode le code du département
+     * @param departmentCode le code du département
      * @param limit le nombre maximum de villes à retourner
      * @return la liste des DTOs des villes correspondantes
      */
@@ -240,13 +238,5 @@ public class CityService {
         return cityMapper.toDtoList(cities);
     }
 
-    /**
-     * Alternative pour getCityByName utilisant VilleRepository.
-     * @param name nom de la ville
-     * @return le DTO de la ville si trouvée, null sinon
-     */
-    public CityDto getCityByNameUsingRepository(String name) {
-        Optional<City> city = cityRepository.findByName(name);
-        return city.map(cityMapper::toDto).orElse(null);
-    }
+
 }

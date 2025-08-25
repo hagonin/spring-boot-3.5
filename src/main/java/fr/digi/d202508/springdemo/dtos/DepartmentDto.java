@@ -4,9 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import java.util.List;
 
-/**
- * DTO pour la représentation des départements dans les échanges API
- */
+
 public class DepartmentDto {
     
     private Long id;

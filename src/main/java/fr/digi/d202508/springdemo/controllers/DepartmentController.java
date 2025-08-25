@@ -11,18 +11,16 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import java.util.List;
 
-/**
- * Contrôleur REST gérant les opérations CRUD des départements.
- */
+
 @RestController
 @RequestMapping("/departments")
 public class DepartmentController {
 
     @Autowired
-    private DepartmentService departementService;
+    private DepartmentService departmentService;
 
     /**
-     * Valide la requête et retourne une réponse d'erreur le cas échéant.
+     * Valide la requête et retourne une réponse d'erreur le cas échéant
      * @param result résultat de la validation
      * @return une réponse 400 si erreurs, sinon null
      */
@@ -38,12 +36,12 @@ public class DepartmentController {
     }
 
     /**
-     * Récupère la liste complète des départements.
+     * Récupère la liste complète des départements
      * @return la liste des départements
      */
     @GetMapping
     public List<DepartmentDto> getAllDepartments() {
-        return departementService.getAllDepartments();
+        return departmentService.getAllDepartments();
     }
 
     /**
@@ -53,7 +51,7 @@ public class DepartmentController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<DepartmentDto> getDepartmentById(@PathVariable Long id) {
-        DepartmentDto departement = departementService.getDepartmentById(id);
+        DepartmentDto departement = departmentService.getDepartmentById(id);
         if (departement != null) {
             return ResponseEntity.ok(departement);
         }
@@ -67,7 +65,7 @@ public class DepartmentController {
      */
     @GetMapping("/code-departement/{code}")
     public ResponseEntity<DepartmentDto> getDepartmentByCode(@PathVariable String code) {
-        DepartmentDto departement = departementService.getDepartmentByCode(code);
+        DepartmentDto departement = departmentService.getDepartmentByCode(code);
         if (departement != null) {
             return ResponseEntity.ok(departement);
         }
@@ -88,12 +86,12 @@ public class DepartmentController {
         }
         
         // Vérifier si le département existe déjà par code
-        if (departementService.departmentExistsByCode(nouveauDepartement.getCode())) {
+        if (departmentService.departmentExistsByCode(nouveauDepartement.getCode())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body("Un département avec ce code existe déjà");
         }
         
-        DepartmentDto departementCree = departementService.createDepartment(nouveauDepartement);
+        DepartmentDto departementCree = departmentService.createDepartment(nouveauDepartement);
         return ResponseEntity.status(HttpStatus.CREATED).body(departementCree);
     }
 
@@ -111,7 +109,7 @@ public class DepartmentController {
             return validationError;
         }
         
-        DepartmentDto departementMisAJour = departementService.updateDepartment(id, departementModifie);
+        DepartmentDto departementMisAJour = departmentService.updateDepartment(id, departementModifie);
         if (departementMisAJour != null) {
             return ResponseEntity.ok(departementMisAJour);
         }
@@ -125,7 +123,7 @@ public class DepartmentController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteDepartment(@PathVariable Long id) {
-        if (departementService.deleteDepartmentById(id)) {
+        if (departmentService.deleteDepartmentById(id)) {
             return ResponseEntity.ok("Département supprimé avec succès");
         }
         return ResponseEntity.notFound().build();

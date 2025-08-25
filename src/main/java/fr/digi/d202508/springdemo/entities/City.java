@@ -6,9 +6,6 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-/**
- * Entité JPA représentant une ville avec validation des champs pour les opérations REST
- */
 @Entity
 @Table(name = "ville")
 public class City {

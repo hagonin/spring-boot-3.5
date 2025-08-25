@@ -13,9 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import java.util.List;
 
-/**
- * Contrôleur REST gérant les opérations CRUD des villes via un service métier
- */
 @RestController
 @RequestMapping("/cities")
 public class CityController {
@@ -80,7 +77,7 @@ public class CityController {
     }
 
     /**
-     * Ajoute une nouvelle ville après validation.
+     * Ajoute une nouvelle ville après validation
      * @param newCity la ville à ajouter
      * @param result résultat de la validation de la requête
      * @return 201 si ajout réussi, 400 si erreurs de validation ou doublons
@@ -107,7 +104,7 @@ public class CityController {
     }
 
     /**
-     * Met à jour une ville existante.
+     * Met à jour une ville existante
      * @param id identifiant de la ville à modifier
      * @param updatedCity nouvelle représentation de la ville
      * @param result résultat de la validation
@@ -136,7 +133,7 @@ public class CityController {
     }
 
     /**
-     * Supprime une ville par son identifiant.
+     * Supprime une ville par son identifiant
      * @param id identifiant de la ville à supprimer
      * @return 200 si supprimée, 404 si introuvable
      */
@@ -150,7 +147,7 @@ public class CityController {
     }
 
     /**
-     * Récupère les N villes les plus peuplées d'un département.
+     * Récupère les N villes les plus peuplées d'un département
      * @param departmentCode code du département
      * @param n nombre de villes à récupérer
      * @return la liste des villes triées par population décroissante
@@ -164,7 +161,7 @@ public class CityController {
     }
 
     /**
-     * Récupère les villes d'un département dans une tranche de population.
+     * Récupère les villes d'un département dans une tranche de population
      * @param departmentCode code du département
      * @param min population minimale
      * @param max population maximale
@@ -182,7 +179,7 @@ public class CityController {
     // === NOUVELLES ROUTES UTILISANT VILLEREPOSITORY ===
 
     /**
-     * Recherche toutes les villes dont le nom commence par une chaîne donnée.
+     * Recherche toutes les villes dont le nom commence par une chaîne donnée
      * @param prefix le préfixe du nom de la ville
      * @return la liste des villes correspondantes
      */
@@ -193,7 +190,7 @@ public class CityController {
     }
 
     /**
-     * Recherche toutes les villes dont la population est supérieure à un minimum.
+     * Recherche toutes les villes dont la population est supérieure à un minimum
      * @param minPopulation la population minimum
      * @return la liste des villes triées par population décroissante
      */
@@ -204,7 +201,7 @@ public class CityController {
     }
 
     /**
-     * Recherche toutes les villes dont la population est comprise entre min et max.
+     * Recherche toutes les villes dont la population est comprise entre min et max
      * @param minPopulation la population minimum (inclusive)
      * @param maxPopulation la population maximum (inclusive)
      * @return la liste des villes triées par population décroissante
@@ -218,7 +215,7 @@ public class CityController {
     }
 
     /**
-     * Recherche toutes les villes d'un département (par ID) dont la population est supérieure à un minimum.
+     * Recherche toutes les villes d'un département (par ID) dont la population est supérieure à un minimum
      * @param departementId l'ID du département
      * @param minPopulation la population minimum
      * @return la liste des villes triées par population décroissante
@@ -232,7 +229,7 @@ public class CityController {
     }
 
     /**
-     * Recherche toutes les villes d'un département (par ID) dont la population est comprise entre min et max.
+     * Recherche toutes les villes d'un département (par ID) dont la population est comprise entre min et max
      * @param departementId l'ID du département
      * @param minPopulation la population minimum (inclusive)
      * @param maxPopulation la population maximum (inclusive)
@@ -248,7 +245,7 @@ public class CityController {
     }
 
     /**
-     * Recherche les n villes les plus peuplées d'un département donné (par ID).
+     * Recherche les n villes les plus peuplées d'un département donné (par ID)
      * @param departementId l'ID du département
      * @param limit le nombre maximum de villes à retourner
      * @return la liste des villes triées par population décroissante
@@ -262,7 +259,7 @@ public class CityController {
     }
 
     /**
-     * Recherche par code de département avec population minimum.
+     * Recherche par code de département avec population minimum
      * @param departementCode le code du département
      * @param minPopulation la population minimum
      * @return la liste des villes correspondantes
@@ -276,7 +273,7 @@ public class CityController {
     }
 
     /**
-     * Recherche par code de département avec population entre min et max.
+     * Recherche par code de département avec population entre min et max
      * @param departementCode le code du département
      * @param minPopulation la population minimum (inclusive)
      * @param maxPopulation la population maximum (inclusive)
@@ -292,7 +289,7 @@ public class CityController {
     }
 
     /**
-     * Recherche les n villes les plus peuplées d'un département par son code.
+     * Recherche les n villes les plus peuplées d'un département par son code
      * @param departementCode le code du département
      * @param limit le nombre maximum de villes à retourner
      * @return la liste des villes correspondantes
@@ -305,17 +302,5 @@ public class CityController {
         return ResponseEntity.ok(cities);
     }
 
-    /**
-     * Alternative pour la recherche par nom utilisant VilleRepository.
-     * @param name nom de la ville
-     * @return 200 avec la ville si trouvée, 404 sinon
-     */
-    @GetMapping("/repository/name/{name}")
-    public ResponseEntity<CityDto> getCityByNameUsingRepository(@PathVariable String name) {
-        CityDto city = cityService.getCityByNameUsingRepository(name);
-        if (city != null) {
-            return ResponseEntity.ok(city);
-        }
-        return ResponseEntity.notFound().build();
-    }
+
 }

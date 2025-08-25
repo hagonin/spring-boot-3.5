@@ -9,9 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-/**
- * DAO gérant l'accès aux données des départements via EntityManager
- */
 @Repository
 @Transactional
 public class DepartmentDao {
@@ -73,7 +70,7 @@ public class DepartmentDao {
 
     /**
      * Sauvegarde ou met à jour un département
-     * @param departement le département à sauvegarder
+     * @param department le département à sauvegarder
      * @return le département sauvegardé
      */
     public Department save(Department department) {

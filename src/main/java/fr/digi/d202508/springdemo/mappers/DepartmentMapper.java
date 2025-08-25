@@ -7,9 +7,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Mapper pour la conversion entre entités Department et DepartmentDto
- */
+
 @Component
 public class DepartmentMapper {
 

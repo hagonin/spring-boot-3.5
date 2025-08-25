@@ -4,9 +4,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-/**
- * DTO pour la représentation des villes dans les échanges API
- */
+
 public class CityDto {
     
     private Long id;
