@@ -235,7 +235,7 @@ public class CityController {
      * @param maxPopulation la population maximum (inclusive)
      * @return la liste des villes triées par population décroissante
      */
-    @GetMapping("/departement/{departementId}/population-between")
+    @GetMapping("/department/{departmentId}/population-between")
     public ResponseEntity<List<CityDto>> getCitiesByDepartmentAndPopulationBetween(
             @PathVariable Long departmentId,
             @RequestParam int minPopulation,
