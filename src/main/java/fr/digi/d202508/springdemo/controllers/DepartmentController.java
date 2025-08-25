@@ -1,8 +1,11 @@
 package fr.digi.d202508.springdemo.controllers;
 
 import fr.digi.d202508.springdemo.dtos.DepartmentDto;
+import fr.digi.d202508.springdemo.exceptions.ApplicationException;
 import fr.digi.d202508.springdemo.services.DepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -18,6 +21,9 @@ public class DepartmentController {
 
     @Autowired
     private DepartmentService departmentService;
+    
+    @Autowired
+    private MessageSource messageSource;
 
     /**
      * Valide la requête et retourne une réponse d'erreur le cas échéant
@@ -50,12 +56,9 @@ public class DepartmentController {
      * @return 200 avec le département si trouvé, 404 sinon
      */
     @GetMapping("/{id}")
-    public ResponseEntity<DepartmentDto> getDepartmentById(@PathVariable Long id) {
+    public ResponseEntity<DepartmentDto> getDepartmentById(@PathVariable Long id) throws ApplicationException {
         DepartmentDto department = departmentService.getDepartmentById(id);
-        if (department != null) {
-            return ResponseEntity.ok(department);
-        }
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(department);
     }
 
     /**
@@ -64,12 +67,9 @@ public class DepartmentController {
      * @return 200 avec le département si trouvé, 404 sinon
      */
     @GetMapping("/code-department/{code}")
-    public ResponseEntity<DepartmentDto> getDepartmentByCode(@PathVariable String code) {
+    public ResponseEntity<DepartmentDto> getDepartmentByCode(@PathVariable String code) throws ApplicationException {
         DepartmentDto department = departmentService.getDepartmentByCode(code);
-        if (department != null) {
-            return ResponseEntity.ok(department);
-        }
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(department);
     }
 
     /**
@@ -79,16 +79,10 @@ public class DepartmentController {
      * @return 201 si ajout réussi, 400 si erreurs de validation ou doublons
      */
     @PostMapping
-    public ResponseEntity<?> createDepartment(@Valid @RequestBody DepartmentDto newDepartment, BindingResult result) {
+    public ResponseEntity<?> createDepartment(@Valid @RequestBody DepartmentDto newDepartment, BindingResult result) throws ApplicationException {
         ResponseEntity<String> validationError = validateDepartment(result);
         if (validationError != null) {
             return validationError;
-        }
-        
-        // Vérifier si le département existe déjà par code
-        if (departmentService.departmentExistsByCode(newDepartment.getCode())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body("Un département avec ce code existe déjà");
         }
         
         DepartmentDto departmentCreated = departmentService.createDepartment(newDepartment);
@@ -103,17 +97,14 @@ public class DepartmentController {
      * @return 200 si succès, 400 si erreurs de validation, 404 si le département n'existe pas
      */
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateDepartment(@PathVariable Long id, @Valid @RequestBody DepartmentDto departmentModified, BindingResult result) {
+    public ResponseEntity<?> updateDepartment(@PathVariable Long id, @Valid @RequestBody DepartmentDto departmentModified, BindingResult result) throws ApplicationException {
         ResponseEntity<String> validationError = validateDepartment(result);
         if (validationError != null) {
             return validationError;
         }
         
         DepartmentDto departmentUpdated = departmentService.updateDepartment(id, departmentModified);
-        if (departmentUpdated!= null) {
-            return ResponseEntity.ok(departmentUpdated);
-        }
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(departmentUpdated);
     }
 
     /**
@@ -122,10 +113,8 @@ public class DepartmentController {
      * @return 200 si supprimé, 404 si introuvable
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteDepartment(@PathVariable Long id) {
-        if (departmentService.deleteDepartmentById(id)) {
-            return ResponseEntity.ok("Département supprimé avec succès");
-        }
-        return ResponseEntity.notFound().build();
+    public ResponseEntity<String> deleteDepartment(@PathVariable Long id) throws ApplicationException {
+        departmentService.deleteDepartmentById(id);
+        return ResponseEntity.ok("Département supprimé avec succès");
     }
 }

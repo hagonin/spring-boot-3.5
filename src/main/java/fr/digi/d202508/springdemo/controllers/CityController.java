@@ -1,6 +1,7 @@
 package fr.digi.d202508.springdemo.controllers;
 
 import fr.digi.d202508.springdemo.dtos.CityDto;
+import fr.digi.d202508.springdemo.exceptions.ApplicationException;
 import fr.digi.d202508.springdemo.services.CityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -54,12 +55,9 @@ public class CityController {
      * @return 200 avec la ville si trouvée, 404 sinon
      */
     @GetMapping("/{id}")
-    public ResponseEntity<CityDto> getCityById(@PathVariable int id) {
+    public ResponseEntity<CityDto> getCityById(@PathVariable int id) throws ApplicationException {
         CityDto city = cityService.getCityById(id);
-        if (city != null) {
-            return ResponseEntity.ok(city);
-        }
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(city);
     }
 
     /**
@@ -68,12 +66,9 @@ public class CityController {
      * @return 200 avec la ville si trouvée, 404 sinon
      */
     @GetMapping("/city-name/{name}")
-    public ResponseEntity<CityDto> getCityByName(@PathVariable String name) {
+    public ResponseEntity<CityDto> getCityByName(@PathVariable String name) throws ApplicationException {
         CityDto city = cityService.getCityByName(name);
-        if (city != null) {
-            return ResponseEntity.ok(city);
-        }
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(city);
     }
 
     /**
@@ -83,24 +78,14 @@ public class CityController {
      * @return 201 si ajout réussi, 400 si erreurs de validation ou doublons
      */
     @PostMapping
-    public ResponseEntity<?> createCity(@Valid @RequestBody CityDto newCity, BindingResult result) {
+    public ResponseEntity<?> createCity(@Valid @RequestBody CityDto newCity, BindingResult result) throws ApplicationException {
         ResponseEntity<String> validationError = validateCity(result);
         if (validationError != null) {
             return validationError;
         }
         
-        // Vérifier si la ville existe déjà par nom
-        if (cityService.getCityByName(newCity.getName()) != null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(messageSource.getMessage("ville.nom.exists", null, LocaleContextHolder.getLocale()));
-        }
-        
-        try {
-            CityDto createdCity = cityService.createCity(newCity);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdCity);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+        CityDto createdCity = cityService.createCity(newCity);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdCity);
     }
 
     /**
@@ -111,25 +96,14 @@ public class CityController {
      * @return 200 si succès, 400 si erreurs de validation, 404 si la ville n'existe pas
      */
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateCity(@PathVariable int id, @Valid @RequestBody CityDto updatedCity, BindingResult result) {
+    public ResponseEntity<?> updateCity(@PathVariable int id, @Valid @RequestBody CityDto updatedCity, BindingResult result) throws ApplicationException {
         ResponseEntity<String> validationError = validateCity(result);
         if (validationError != null) {
             return validationError;
         }
         
-        if (cityService.getCityById(id) == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        try {
-            CityDto updatedCityDto = cityService.updateCity(id, updatedCity);
-            if (updatedCityDto != null) {
-                return ResponseEntity.ok(updatedCityDto);
-            }
-            return ResponseEntity.notFound().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+        CityDto updatedCityDto = cityService.updateCity(id, updatedCity);
+        return ResponseEntity.ok(updatedCityDto);
     }
 
     /**
@@ -138,12 +112,9 @@ public class CityController {
      * @return 200 si supprimée, 404 si introuvable
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteCity(@PathVariable int id) {
-        boolean removed = cityService.deleteCity(id);
-        if (removed) {
-            return ResponseEntity.ok("Ville supprimée avec succès");
-        }
-        return ResponseEntity.notFound().build();
+    public ResponseEntity<String> deleteCity(@PathVariable int id) throws ApplicationException {
+        cityService.deleteCity(id);
+        return ResponseEntity.ok(messageSource.getMessage("ville.deleted", null, LocaleContextHolder.getLocale()));
     }
 
     /**
@@ -155,7 +126,7 @@ public class CityController {
     @GetMapping("/top")
     public ResponseEntity<List<CityDto>> getTopCitiesByDepartment(
             @RequestParam String departmentCode, 
-            @RequestParam int n) {
+            @RequestParam int n) throws ApplicationException {
         List<CityDto> cities = cityService.getTopCitiesByDepartment(departmentCode, n);
         return ResponseEntity.ok(cities);
     }
@@ -171,7 +142,7 @@ public class CityController {
     public ResponseEntity<List<CityDto>> getCitiesByPopulationRange(
             @RequestParam String departmentCode,
             @RequestParam int min,
-            @RequestParam int max) {
+            @RequestParam int max) throws ApplicationException {
         List<CityDto> cities = cityService.getCitiesByDepartmentAndPopulationRange(departmentCode, min, max);
         return ResponseEntity.ok(cities);
     }
