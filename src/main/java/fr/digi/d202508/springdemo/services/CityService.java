@@ -218,9 +218,20 @@ public class CityService {
      * Recherche toutes les villes dont le nom commence par une chaîne donnée.
      * @param prefix le préfixe du nom de la ville
      * @return la liste des DTOs des villes correspondantes
+     * @throws ApplicationException si aucune ville n'est trouvée ou si le préfixe est invalide
      */
-    public List<CityDto> getCitiesStartingWith(String prefix) {
-        List<City> cities = cityRepository.findByNameStartingWithIgnoreCaseOrderByNameAsc(prefix);
+    public List<CityDto> getCitiesStartingWith(String prefix) throws ApplicationException {
+        if (prefix == null || prefix.trim().isEmpty()) {
+            throw new ApplicationException(messageSource.getMessage("ville.nom.notblank", null, LocaleContextHolder.getLocale()));
+        }
+        if (prefix.trim().length() < 2) {
+            throw new ApplicationException(messageSource.getMessage("ville.name.min.length", null, LocaleContextHolder.getLocale()));
+        }
+        
+        List<City> cities = cityRepository.findByNameStartingWithIgnoreCaseOrderByNameAsc(prefix.trim());
+        if (cities.isEmpty()) {
+            throw new ApplicationException(messageSource.getMessage("ville.search.name.empty", new Object[]{prefix}, LocaleContextHolder.getLocale()));
+        }
         return cityMapper.toDtoList(cities);
     }
 
@@ -228,9 +239,17 @@ public class CityService {
      * Recherche toutes les villes dont la population est supérieure à un minimum.
      * @param minPopulation la population minimum
      * @return la liste des DTOs des villes triées par population décroissante
+     * @throws ApplicationException si aucune ville n'est trouvée ou si le paramètre est invalide
      */
-    public List<CityDto> getCitiesWithMinPopulation(int minPopulation) {
+    public List<CityDto> getCitiesWithMinPopulation(int minPopulation) throws ApplicationException {
+        if (minPopulation < 0) {
+            throw new ApplicationException(messageSource.getMessage("ville.population.negative", null, LocaleContextHolder.getLocale()));
+        }
+        
         List<City> cities = cityRepository.findByPopulationGreaterThanOrderByPopulationDesc(minPopulation);
+        if (cities.isEmpty()) {
+            throw new ApplicationException(messageSource.getMessage("ville.search.population.min.empty", new Object[]{minPopulation}, LocaleContextHolder.getLocale()));
+        }
         return cityMapper.toDtoList(cities);
     }
 
@@ -239,9 +258,15 @@ public class CityService {
      * @param minPopulation la population minimum (inclusive)
      * @param maxPopulation la population maximum (inclusive)
      * @return la liste des DTOs des villes triées par population décroissante
+     * @throws ApplicationException si aucune ville n'est trouvée ou si les paramètres sont invalides
      */
-    public List<CityDto> getCitiesWithPopulationBetween(int minPopulation, int maxPopulation) {
+    public List<CityDto> getCitiesWithPopulationBetween(int minPopulation, int maxPopulation) throws ApplicationException {
+        validatePopulationRange(minPopulation, maxPopulation);
+        
         List<City> cities = cityRepository.findByPopulationBetweenOrderByPopulationDesc(minPopulation, maxPopulation);
+        if (cities.isEmpty()) {
+            throw new ApplicationException(messageSource.getMessage("ville.search.population.between.empty", new Object[]{minPopulation, maxPopulation}, LocaleContextHolder.getLocale()));
+        }
         return cityMapper.toDtoList(cities);
     }
 
@@ -250,9 +275,26 @@ public class CityService {
      * @param departmentId l'ID du département
      * @param minPopulation la population minimum
      * @return la liste des DTOs des villes triées par population décroissante
+     * @throws ApplicationException si aucune ville n'est trouvée ou si les paramètres sont invalides
      */
-    public List<CityDto> getCitiesByDepartmentAndMinPopulation(Long departmentId, int minPopulation) {
+    public List<CityDto> getCitiesByDepartmentAndMinPopulation(Long departmentId, int minPopulation) throws ApplicationException {
+        if (departmentId == null || departmentId <= 0) {
+            throw new ApplicationException("L'identifiant du département doit être un nombre positif");
+        }
+        if (minPopulation < 0) {
+            throw new ApplicationException(messageSource.getMessage("ville.population.negative", null, LocaleContextHolder.getLocale()));
+        }
+        
+        // Vérifier que le département existe
+        Department department = departmentDao.findById(departmentId);
+        if (department == null) {
+            throw new ApplicationException(messageSource.getMessage("departement.not.found.id", new Object[]{departmentId}, LocaleContextHolder.getLocale()));
+        }
+        
         List<City> cities = cityRepository.findByDepartementAndPopulationGreaterThan(departmentId, minPopulation);
+        if (cities.isEmpty()) {
+            throw new ApplicationException(messageSource.getMessage("ville.search.department.population.min.empty", new Object[]{minPopulation, department.getCode()}, LocaleContextHolder.getLocale()));
+        }
         return cityMapper.toDtoList(cities);
     }
 
@@ -262,9 +304,24 @@ public class CityService {
      * @param minPopulation la population minimum (inclusive)
      * @param maxPopulation la population maximum (inclusive)
      * @return la liste des DTOs des villes triées par population décroissante
+     * @throws ApplicationException si aucune ville n'est trouvée ou si les paramètres sont invalides
      */
-    public List<CityDto> getCitiesByDepartmentAndPopulationBetween(Long departmentId, int minPopulation, int maxPopulation) {
+    public List<CityDto> getCitiesByDepartmentAndPopulationBetween(Long departmentId, int minPopulation, int maxPopulation) throws ApplicationException {
+        if (departmentId == null || departmentId <= 0) {
+            throw new ApplicationException("L'identifiant du département doit être un nombre positif");
+        }
+        validatePopulationRange(minPopulation, maxPopulation);
+        
+        // Vérifier que le département existe
+        Department department = departmentDao.findById(departmentId);
+        if (department == null) {
+            throw new ApplicationException(messageSource.getMessage("departement.not.found.id", new Object[]{departmentId}, LocaleContextHolder.getLocale()));
+        }
+        
         List<City> cities = cityRepository.findByDepartementAndPopulationBetween(departmentId, minPopulation, maxPopulation);
+        if (cities.isEmpty()) {
+            throw new ApplicationException(messageSource.getMessage("ville.search.department.population.between.empty", new Object[]{minPopulation, maxPopulation, department.getCode()}, LocaleContextHolder.getLocale()));
+        }
         return cityMapper.toDtoList(cities);
     }
 
@@ -273,9 +330,29 @@ public class CityService {
      * @param departmentId l'ID du département
      * @param limit le nombre maximum de villes à retourner
      * @return la liste des DTOs des villes triées par population décroissante
+     * @throws ApplicationException si aucune ville n'est trouvée ou si les paramètres sont invalides
      */
-    public List<CityDto> getTopCitiesByDepartmentId(Long departmentId, int limit) {
+    public List<CityDto> getTopCitiesByDepartmentId(Long departmentId, int limit) throws ApplicationException {
+        if (departmentId == null || departmentId <= 0) {
+            throw new ApplicationException("L'identifiant du département doit être un nombre positif");
+        }
+        if (limit <= 0) {
+            throw new ApplicationException(messageSource.getMessage("ville.count.positive", null, LocaleContextHolder.getLocale()));
+        }
+        if (limit > 1000) {
+            throw new ApplicationException(messageSource.getMessage("ville.count.max.exceeded", null, LocaleContextHolder.getLocale()));
+        }
+        
+        // Vérifier que le département existe
+        Department department = departmentDao.findById(departmentId);
+        if (department == null) {
+            throw new ApplicationException(messageSource.getMessage("departement.not.found.id", new Object[]{departmentId}, LocaleContextHolder.getLocale()));
+        }
+        
         List<City> cities = cityRepository.findTopNByDepartementOrderByPopulationDesc(departmentId, limit);
+        if (cities.isEmpty()) {
+            throw new ApplicationException(messageSource.getMessage("ville.search.department.top.empty", new Object[]{department.getCode()}, LocaleContextHolder.getLocale()));
+        }
         return cityMapper.toDtoList(cities);
     }
 
@@ -284,9 +361,26 @@ public class CityService {
      * @param departmentCode le code du département
      * @param minPopulation la population minimum
      * @return la liste des DTOs des villes correspondantes
+     * @throws ApplicationException si aucune ville n'est trouvée ou si les paramètres sont invalides
      */
-    public List<CityDto> getCitiesByDepartmentCodeAndMinPopulation(String departmentCode, int minPopulation) {
-        List<City> cities = cityRepository.findByDepartementCodeAndPopulationGreaterThan(departmentCode, minPopulation);
+    public List<CityDto> getCitiesByDepartmentCodeAndMinPopulation(String departmentCode, int minPopulation) throws ApplicationException {
+        if (departmentCode == null || departmentCode.trim().isEmpty()) {
+            throw new ApplicationException(messageSource.getMessage("departement.code.notblank", null, LocaleContextHolder.getLocale()));
+        }
+        if (minPopulation < 0) {
+            throw new ApplicationException(messageSource.getMessage("ville.population.negative", null, LocaleContextHolder.getLocale()));
+        }
+        
+        // Vérifier que le département existe
+        Department department = departmentDao.findByCode(departmentCode.trim());
+        if (department == null) {
+            throw new ApplicationException(messageSource.getMessage("departement.not.found.code", new Object[]{departmentCode}, LocaleContextHolder.getLocale()));
+        }
+        
+        List<City> cities = cityRepository.findByDepartementCodeAndPopulationGreaterThan(departmentCode.trim(), minPopulation);
+        if (cities.isEmpty()) {
+            throw new ApplicationException(messageSource.getMessage("ville.search.department.population.min.empty", new Object[]{minPopulation, departmentCode}, LocaleContextHolder.getLocale()));
+        }
         return cityMapper.toDtoList(cities);
     }
 
@@ -296,9 +390,24 @@ public class CityService {
      * @param minPopulation la population minimum (inclusive)
      * @param maxPopulation la population maximum (inclusive)
      * @return la liste des DTOs des villes correspondantes
+     * @throws ApplicationException si aucune ville n'est trouvée ou si les paramètres sont invalides
      */
-    public List<CityDto> getCitiesByDepartmentCodeAndPopulationBetween(String departmentCode, int minPopulation, int maxPopulation) {
-        List<City> cities = cityRepository.findByDepartementCodeAndPopulationBetween(departmentCode, minPopulation, maxPopulation);
+    public List<CityDto> getCitiesByDepartmentCodeAndPopulationBetween(String departmentCode, int minPopulation, int maxPopulation) throws ApplicationException {
+        if (departmentCode == null || departmentCode.trim().isEmpty()) {
+            throw new ApplicationException(messageSource.getMessage("departement.code.notblank", null, LocaleContextHolder.getLocale()));
+        }
+        validatePopulationRange(minPopulation, maxPopulation);
+        
+        // Vérifier que le département existe
+        Department department = departmentDao.findByCode(departmentCode.trim());
+        if (department == null) {
+            throw new ApplicationException(messageSource.getMessage("departement.not.found.code", new Object[]{departmentCode}, LocaleContextHolder.getLocale()));
+        }
+        
+        List<City> cities = cityRepository.findByDepartementCodeAndPopulationBetween(departmentCode.trim(), minPopulation, maxPopulation);
+        if (cities.isEmpty()) {
+            throw new ApplicationException(messageSource.getMessage("ville.search.department.population.between.empty", new Object[]{minPopulation, maxPopulation, departmentCode}, LocaleContextHolder.getLocale()));
+        }
         return cityMapper.toDtoList(cities);
     }
 
@@ -307,9 +416,29 @@ public class CityService {
      * @param departmentCode le code du département
      * @param limit le nombre maximum de villes à retourner
      * @return la liste des DTOs des villes correspondantes
+     * @throws ApplicationException si aucune ville n'est trouvée ou si les paramètres sont invalides
      */
-    public List<CityDto> getTopCitiesByDepartmentCode(String departmentCode, int limit) {
-        List<City> cities = cityRepository.findTopNByDepartementCodeOrderByPopulationDesc(departmentCode, limit);
+    public List<CityDto> getTopCitiesByDepartmentCode(String departmentCode, int limit) throws ApplicationException {
+        if (departmentCode == null || departmentCode.trim().isEmpty()) {
+            throw new ApplicationException(messageSource.getMessage("departement.code.notblank", null, LocaleContextHolder.getLocale()));
+        }
+        if (limit <= 0) {
+            throw new ApplicationException(messageSource.getMessage("ville.count.positive", null, LocaleContextHolder.getLocale()));
+        }
+        if (limit > 1000) {
+            throw new ApplicationException(messageSource.getMessage("ville.count.max.exceeded", null, LocaleContextHolder.getLocale()));
+        }
+        
+        // Vérifier que le département existe
+        Department department = departmentDao.findByCode(departmentCode.trim());
+        if (department == null) {
+            throw new ApplicationException(messageSource.getMessage("departement.not.found.code", new Object[]{departmentCode}, LocaleContextHolder.getLocale()));
+        }
+        
+        List<City> cities = cityRepository.findTopNByDepartementCodeOrderByPopulationDesc(departmentCode.trim(), limit);
+        if (cities.isEmpty()) {
+            throw new ApplicationException(messageSource.getMessage("ville.search.department.top.empty", new Object[]{departmentCode}, LocaleContextHolder.getLocale()));
+        }
         return cityMapper.toDtoList(cities);
     }
 

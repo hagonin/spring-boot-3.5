@@ -155,7 +155,7 @@ public class CityController {
      * @return la liste des villes correspondantes
      */
     @GetMapping("/starts-with/{prefix}")
-    public ResponseEntity<List<CityDto>> getCitiesStartingWith(@PathVariable String prefix) {
+    public ResponseEntity<List<CityDto>> getCitiesStartingWith(@PathVariable String prefix) throws ApplicationException {
         List<CityDto> cities = cityService.getCitiesStartingWith(prefix);
         return ResponseEntity.ok(cities);
     }
@@ -166,7 +166,7 @@ public class CityController {
      * @return la liste des villes triées par population décroissante
      */
     @GetMapping("/population-min")
-    public ResponseEntity<List<CityDto>> getCitiesWithMinPopulation(@RequestParam int minPopulation) {
+    public ResponseEntity<List<CityDto>> getCitiesWithMinPopulation(@RequestParam int minPopulation) throws ApplicationException {
         List<CityDto> cities = cityService.getCitiesWithMinPopulation(minPopulation);
         return ResponseEntity.ok(cities);
     }
@@ -180,7 +180,7 @@ public class CityController {
     @GetMapping("/population-between")
     public ResponseEntity<List<CityDto>> getCitiesWithPopulationBetween(
             @RequestParam int minPopulation, 
-            @RequestParam int maxPopulation) {
+            @RequestParam int maxPopulation) throws ApplicationException {
         List<CityDto> cities = cityService.getCitiesWithPopulationBetween(minPopulation, maxPopulation);
         return ResponseEntity.ok(cities);
     }
@@ -194,7 +194,7 @@ public class CityController {
     @GetMapping("/department/{departmentId}/population-min")
     public ResponseEntity<List<CityDto>> getCitiesByDepartmentAndMinPopulation(
             @PathVariable Long departmentId,
-            @RequestParam int minPopulation) {
+            @RequestParam int minPopulation) throws ApplicationException {
         List<CityDto> cities = cityService.getCitiesByDepartmentAndMinPopulation(departmentId, minPopulation);
         return ResponseEntity.ok(cities);
     }
@@ -210,7 +210,7 @@ public class CityController {
     public ResponseEntity<List<CityDto>> getCitiesByDepartmentAndPopulationBetween(
             @PathVariable Long departmentId,
             @RequestParam int minPopulation,
-            @RequestParam int maxPopulation) {
+            @RequestParam int maxPopulation) throws ApplicationException {
         List<CityDto> cities = cityService.getCitiesByDepartmentAndPopulationBetween(departmentId, minPopulation, maxPopulation);
         return ResponseEntity.ok(cities);
     }
@@ -224,7 +224,7 @@ public class CityController {
     @GetMapping("/department/{departmentId}/top-cities")
     public ResponseEntity<List<CityDto>> getTopCitiesByDepartmentId(
             @PathVariable Long departmentId,
-            @RequestParam int limit) {
+            @RequestParam int limit) throws ApplicationException {
         List<CityDto> cities = cityService.getTopCitiesByDepartmentId(departmentId, limit);
         return ResponseEntity.ok(cities);
     }
@@ -238,7 +238,7 @@ public class CityController {
     @GetMapping("/code/{departmentCode}/population-min")
     public ResponseEntity<List<CityDto>> getCitiesByDepartmentCodeAndMinPopulation(
             @PathVariable String departmentCode,
-            @RequestParam int minPopulation) {
+            @RequestParam int minPopulation) throws ApplicationException {
         List<CityDto> cities = cityService.getCitiesByDepartmentCodeAndMinPopulation(departmentCode, minPopulation);
         return ResponseEntity.ok(cities);
     }
@@ -254,7 +254,7 @@ public class CityController {
     public ResponseEntity<List<CityDto>> getCitiesByDepartmentCodeAndPopulationBetween(
             @PathVariable String departmentCode,
             @RequestParam int minPopulation,
-            @RequestParam int maxPopulation) {
+            @RequestParam int maxPopulation) throws ApplicationException {
         List<CityDto> cities = cityService.getCitiesByDepartmentCodeAndPopulationBetween(departmentCode, minPopulation, maxPopulation);
         return ResponseEntity.ok(cities);
     }
@@ -268,7 +268,7 @@ public class CityController {
     @GetMapping("/code/{departmentCode}/top-cities")
     public ResponseEntity<List<CityDto>> getTopCitiesByDepartmentCode(
             @PathVariable String departmentCode,
-            @RequestParam int limit) {
+            @RequestParam int limit) throws ApplicationException {
         List<CityDto> cities = cityService.getTopCitiesByDepartmentCode(departmentCode, limit);
         return ResponseEntity.ok(cities);
     }
