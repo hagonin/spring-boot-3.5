@@ -1,16 +1,16 @@
 package fr.digi.d202508.springdemo;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.digi.d202508.springdemo.daos.DepartmentDao;
 import fr.digi.d202508.springdemo.entities.Department;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.web.client.RestTemplate;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.JsonNode;
 
 import java.util.List;
 
@@ -19,16 +19,19 @@ import java.util.List;
  * en appelant l'API externe geo.api.gouv.fr sans démarrer Tomcat
  */
 @SpringBootApplication(exclude = WebMvcAutoConfiguration.class)
-@Profile("updater")
 public class DepartmentUpdaterApplication implements CommandLineRunner {
 
     @Autowired
     private DepartmentDao departmentDao;
 
+    @Value("${api.departements.url}")
+    private String apiUrl;
+
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public static void main(String[] args) {
+        System.setProperty("spring.profiles.active", "updater");
         SpringApplication app = new SpringApplication(DepartmentUpdaterApplication.class);
         app.setWebApplicationType(org.springframework.boot.WebApplicationType.NONE);
         app.run(args);
@@ -40,7 +43,6 @@ public class DepartmentUpdaterApplication implements CommandLineRunner {
         
         try {
             // Appel de l'API externe
-            String apiUrl = "https://geo.api.gouv.fr/departements";
             System.out.println("Appel de l'API : " + apiUrl);
             
             String response = restTemplate.getForObject(apiUrl, String.class);
