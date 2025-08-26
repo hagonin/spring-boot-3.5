@@ -328,7 +328,7 @@ public class CityController {
                 description = "Population minimum invalide",
                 content = @Content())
     })
-    @GetMapping("/export/csv")
+    @GetMapping("/export-city/csv")
     public ResponseEntity<byte[]> exportCitiesWithMinPopulationToCsv(
             @Parameter(description = "Population minimum pour l'export", example = "50000", required = true)
             @RequestParam int minPopulation) throws ApplicationException {

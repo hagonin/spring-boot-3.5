@@ -37,7 +37,7 @@ public class DepartmentMapper {
         return new DepartmentDto(
             department.getId(),
             department.getCode(),
-            department.getNom(),
+            department.getName(),
             population,
             cityNames
         );
@@ -56,7 +56,7 @@ public class DepartmentMapper {
         Department department = new Department();
         department.setId(departmentDto.getId());
         department.setCode(departmentDto.getCode());
-        department.setNom(departmentDto.getName());
+        department.setName(departmentDto.getName());
         
         return department;
     }
@@ -72,7 +72,7 @@ public class DepartmentMapper {
         }
 
         department.setCode(departmentDto.getCode());
-        department.setNom(departmentDto.getName());
+        department.setName(departmentDto.getName());
     }
 
     /**

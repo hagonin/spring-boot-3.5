@@ -20,7 +20,7 @@ public class Department {
     private String code;
     
     @NotBlank(message = "{departement.nom.notblank}")
-    private String nom;
+    private String name;
 
     @OneToMany(mappedBy = "department", fetch = FetchType.LAZY)
     @JsonManagedReference
@@ -29,9 +29,9 @@ public class Department {
     public Department() {
     }
 
-    public Department(String code, String nom) {
+    public Department(String code, String name) {
         this.code = code;
-        this.nom = nom;
+        this.name = name;
     }
 
     public Long getId() {
@@ -50,12 +50,12 @@ public class Department {
         this.code = code;
     }
 
-    public String getNom() {
-        return nom;
+    public String getName() {
+        return name;
     }
 
-    public void setNom(String nom) {
-        this.nom = nom;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public List<City> getCities() {
