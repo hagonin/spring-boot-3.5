@@ -3,6 +3,14 @@ package fr.digi.d202508.springdemo.controllers;
 import fr.digi.d202508.springdemo.dtos.DepartmentDto;
 import fr.digi.d202508.springdemo.exceptions.ApplicationException;
 import fr.digi.d202508.springdemo.services.DepartmentService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -17,6 +25,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/departments")
+@Tag(name = "Départements", description = "API pour la gestion des départements français")
 public class DepartmentController {
 
     @Autowired
@@ -45,6 +54,13 @@ public class DepartmentController {
      * Récupère la liste complète des départements
      * @return la liste des départements
      */
+    @Operation(summary = "Retourne la liste de tous les départements")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200",
+                description = "Liste des départements au format JSON",
+                content = {@Content(mediaType = "application/json",
+                        array = @ArraySchema(schema = @Schema(implementation = DepartmentDto.class)))})
+    })
     @GetMapping
     public List<DepartmentDto> getAllDepartments() {
         return departmentService.getAllDepartments();
@@ -55,8 +71,20 @@ public class DepartmentController {
      * @param id identifiant du département
      * @return 200 avec le département si trouvé, 404 sinon
      */
+    @Operation(summary = "Retourne un département à partir de son identifiant")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200",
+                description = "Département au format JSON",
+                content = {@Content(mediaType = "application/json",
+                        schema = @Schema(implementation = DepartmentDto.class))}),
+        @ApiResponse(responseCode = "400",
+                description = "Département non trouvé",
+                content = @Content())
+    })
     @GetMapping("/{id}")
-    public ResponseEntity<DepartmentDto> getDepartmentById(@PathVariable Long id) throws ApplicationException {
+    public ResponseEntity<DepartmentDto> getDepartmentById(
+            @Parameter(description = "Identifiant du département à récupérer", example = "34", required = true)
+            @PathVariable Long id) throws ApplicationException {
         DepartmentDto department = departmentService.getDepartmentById(id);
         return ResponseEntity.ok(department);
     }
@@ -78,8 +106,21 @@ public class DepartmentController {
      * @param result résultat de la validation de la requête
      * @return 201 si ajout réussi, 400 si erreurs de validation ou doublons
      */
+    @Operation(summary = "Crée un nouveau département")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201",
+                description = "Département créé avec succès",
+                content = {@Content(mediaType = "application/json",
+                        schema = @Schema(implementation = DepartmentDto.class))}),
+        @ApiResponse(responseCode = "400",
+                description = "Erreurs de validation ou département existant",
+                content = @Content())
+    })
     @PostMapping
-    public ResponseEntity<?> createDepartment(@Valid @RequestBody DepartmentDto newDepartment, BindingResult result) throws ApplicationException {
+    public ResponseEntity<?> createDepartment(
+            @Parameter(description = "Informations du département à créer", required = true)
+            @Valid @RequestBody DepartmentDto newDepartment, 
+            BindingResult result) throws ApplicationException {
         ResponseEntity<String> validationError = validateDepartment(result);
         if (validationError != null) {
             return validationError;
@@ -96,8 +137,26 @@ public class DepartmentController {
      * @param result résultat de la validation
      * @return 200 si succès, 400 si erreurs de validation, 404 si le département n'existe pas
      */
+    @Operation(summary = "Met à jour un département existant")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200",
+                description = "Département mis à jour avec succès",
+                content = {@Content(mediaType = "application/json",
+                        schema = @Schema(implementation = DepartmentDto.class))}),
+        @ApiResponse(responseCode = "400",
+                description = "Erreurs de validation ou département non trouvé",
+                content = @Content()),
+        @ApiResponse(responseCode = "404",
+                description = "Département non trouvé",
+                content = @Content())
+    })
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateDepartment(@PathVariable Long id, @Valid @RequestBody DepartmentDto departmentModified, BindingResult result) throws ApplicationException {
+    public ResponseEntity<?> updateDepartment(
+            @Parameter(description = "Identifiant du département à modifier", example = "34", required = true)
+            @PathVariable Long id, 
+            @Parameter(description = "Nouvelles informations du département", required = true)
+            @Valid @RequestBody DepartmentDto departmentModified, 
+            BindingResult result) throws ApplicationException {
         ResponseEntity<String> validationError = validateDepartment(result);
         if (validationError != null) {
             return validationError;
@@ -112,8 +171,20 @@ public class DepartmentController {
      * @param id identifiant du département à supprimer
      * @return 200 si supprimé, 404 si introuvable
      */
+    @Operation(summary = "Supprime un département")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200",
+                description = "Département supprimé avec succès",
+                content = {@Content(mediaType = "text/plain",
+                        schema = @Schema(type = "string", example = "Département supprimé avec succès"))}),
+        @ApiResponse(responseCode = "400",
+                description = "Département non trouvé",
+                content = @Content())
+    })
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteDepartment(@PathVariable Long id) throws ApplicationException {
+    public ResponseEntity<String> deleteDepartment(
+            @Parameter(description = "Identifiant du département à supprimer", example = "34", required = true)
+            @PathVariable Long id) throws ApplicationException {
         departmentService.deleteDepartmentById(id);
         return ResponseEntity.ok("Département supprimé avec succès");
     }

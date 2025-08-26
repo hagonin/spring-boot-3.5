@@ -3,6 +3,14 @@ package fr.digi.d202508.springdemo.controllers;
 import fr.digi.d202508.springdemo.dtos.CityDto;
 import fr.digi.d202508.springdemo.exceptions.ApplicationException;
 import fr.digi.d202508.springdemo.services.CityService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -16,6 +24,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/cities")
+@Tag(name = "Villes", description = "API pour la gestion des villes françaises avec recherches avancées")
 public class CityController {
 
     @Autowired
@@ -44,6 +53,13 @@ public class CityController {
      * Récupère la liste complète des villes
      * @return la liste des villes
      */
+    @Operation(summary = "Retourne la liste de toutes les villes")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200",
+                description = "Liste des villes au format JSON",
+                content = {@Content(mediaType = "application/json",
+                        array = @ArraySchema(schema = @Schema(implementation = CityDto.class)))})
+    })
     @GetMapping
     public List<CityDto> getCities() {
         return cityService.getAllCities();
@@ -154,8 +170,21 @@ public class CityController {
      * @param prefix le préfixe du nom de la ville
      * @return la liste des villes correspondantes
      */
+    @Operation(summary = "Recherche des villes par préfixe de nom",
+               description = "Retourne toutes les villes dont le nom commence par la chaîne spécifiée")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200",
+                description = "Liste des villes trouvées",
+                content = {@Content(mediaType = "application/json",
+                        array = @ArraySchema(schema = @Schema(implementation = CityDto.class)))}),
+        @ApiResponse(responseCode = "400",
+                description = "Préfixe invalide ou aucune ville trouvée",
+                content = @Content())
+    })
     @GetMapping("/starts-with/{prefix}")
-    public ResponseEntity<List<CityDto>> getCitiesStartingWith(@PathVariable String prefix) throws ApplicationException {
+    public ResponseEntity<List<CityDto>> getCitiesStartingWith(
+            @Parameter(description = "Préfixe du nom de ville (minimum 2 caractères)", example = "Par", required = true)
+            @PathVariable String prefix) throws ApplicationException {
         List<CityDto> cities = cityService.getCitiesStartingWith(prefix);
         return ResponseEntity.ok(cities);
     }
