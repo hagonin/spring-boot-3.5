@@ -1,8 +1,10 @@
 package fr.digi.d202508.springdemo.controllers;
 
 import fr.digi.d202508.springdemo.dtos.CityDto;
+import fr.digi.d202508.springdemo.dtos.DepartmentDto;
 import fr.digi.d202508.springdemo.exceptions.ApplicationException;
 import fr.digi.d202508.springdemo.services.CityService;
+import fr.digi.d202508.springdemo.services.DepartmentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -14,12 +16,18 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @RestController
@@ -29,6 +37,9 @@ public class CityController {
 
     @Autowired
     private CityService cityService;
+    
+    @Autowired
+    private DepartmentService departmentService;
     
     @Autowired
     private MessageSource messageSource;
@@ -300,6 +311,101 @@ public class CityController {
             @RequestParam int limit) throws ApplicationException {
         List<CityDto> cities = cityService.getTopCitiesByDepartmentCode(departmentCode, limit);
         return ResponseEntity.ok(cities);
+    }
+
+    /**
+     * Exporte en CSV toutes les villes dont la population est supérieure à un minimum donné
+     * @param minPopulation la population minimum
+     * @return fichier CSV avec nom de ville, nombre d'habitants, code département, nom département
+     */
+    @Operation(summary = "Exporte les villes en CSV par population minimum",
+               description = "Retourne un fichier CSV contenant les villes avec population supérieure au minimum spécifié")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200",
+                description = "Fichier CSV généré avec succès",
+                content = {@Content(mediaType = "text/csv")}),
+        @ApiResponse(responseCode = "400",
+                description = "Population minimum invalide",
+                content = @Content())
+    })
+    @GetMapping("/export/csv")
+    public ResponseEntity<byte[]> exportCitiesWithMinPopulationToCsv(
+            @Parameter(description = "Population minimum pour l'export", example = "50000", required = true)
+            @RequestParam int minPopulation) throws ApplicationException {
+        
+        if (minPopulation < 0) {
+            throw new ApplicationException(messageSource.getMessage("ville.export.csv.population.negative", null, LocaleContextHolder.getLocale()));
+        }
+        
+        List<CityDto> cities = cityService.getCitiesWithMinPopulation(minPopulation);
+        
+        try {
+            byte[] csvContent = generateCsvContent(cities);
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.parseMediaType("text/csv"));
+            headers.setContentDispositionFormData("attachment", "cities_population_min_" + minPopulation + ".csv");
+            
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(csvContent);
+                    
+        } catch (IOException e) {
+            throw new ApplicationException(messageSource.getMessage("ville.export.csv.generation.error", new Object[]{e.getMessage()}, LocaleContextHolder.getLocale()));
+        }
+    }
+    
+    /**
+     * Génère le contenu CSV pour les villes
+     * @param cities la liste des villes
+     * @return le contenu CSV sous forme de bytes
+     * @throws IOException si erreur d'écriture
+     * @throws ApplicationException si erreur de récupération des départements
+     */
+    private byte[] generateCsvContent(List<CityDto> cities) throws IOException, ApplicationException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
+        
+        // En-tête CSV
+        writer.write("Nom de la ville,Nombre d'habitants,Code département,Nom du département\n");
+        
+        // Données des villes
+        for (CityDto city : cities) {
+            String departmentName = "";
+            try {
+                DepartmentDto department = departmentService.getDepartmentByCode(city.getDepartmentCode());
+                departmentName = department.getName();
+                // Si le nom du département est vide ou null, utiliser le code
+                if (departmentName == null || departmentName.trim().isEmpty()) {
+                    departmentName = "Département " + city.getDepartmentCode();
+                }
+            } catch (ApplicationException e) {
+                departmentName = messageSource.getMessage("ville.export.csv.department.unknown", null, LocaleContextHolder.getLocale());
+            }
+            
+            writer.write(String.format("\"%s\",%d,\"%s\",\"%s\"\n",
+                    escapeCsv(city.getName()),
+                    city.getPopulation(),
+                    escapeCsv(city.getDepartmentCode()),
+                    escapeCsv(departmentName)));
+        }
+        
+        writer.flush();
+        writer.close();
+        
+        return outputStream.toByteArray();
+    }
+    
+    /**
+     * Échappe les caractères spéciaux pour le CSV
+     * @param value la valeur à échapper
+     * @return la valeur échappée
+     */
+    private String escapeCsv(String value) {
+        if (value == null) {
+            return "";
+        }
+        return value.replace("\"", "\"\"");
     }
 
 
