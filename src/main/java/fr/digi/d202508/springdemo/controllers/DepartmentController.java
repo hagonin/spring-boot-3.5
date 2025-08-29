@@ -3,6 +3,7 @@ package fr.digi.d202508.springdemo.controllers;
 import fr.digi.d202508.springdemo.dtos.DepartmentDto;
 import fr.digi.d202508.springdemo.exceptions.ApplicationException;
 import fr.digi.d202508.springdemo.services.DepartmentService;
+import fr.digi.d202508.springdemo.services.PdfService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -21,6 +22,8 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 import java.util.List;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
 
 @RestController
@@ -30,6 +33,9 @@ public class DepartmentController {
 
     @Autowired
     private DepartmentService departmentService;
+    
+    @Autowired
+    private PdfService pdfService;
     
     @Autowired
     private MessageSource messageSource;
@@ -187,5 +193,41 @@ public class DepartmentController {
             @PathVariable Long id) throws ApplicationException {
         departmentService.deleteDepartmentById(id);
         return ResponseEntity.ok("Département supprimé avec succès");
+    }
+
+    /**
+     * Exporte les informations d'un département et ses villes au format PDF
+     * @param code code du département
+     * @return fichier PDF avec les informations du département
+     */
+    @Operation(summary = "Exporte un département et ses villes au format PDF")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200",
+                description = "PDF généré avec succès",
+                content = {@Content(mediaType = "application/pdf")}),
+        @ApiResponse(responseCode = "400",
+                description = "Département non trouvé",
+                content = @Content())
+    })
+    @GetMapping("/{code}/export/pdf")
+    public ResponseEntity<byte[]> exportDepartmentToPdf(
+            @Parameter(description = "Code du département à exporter", example = "34", required = true)
+            @PathVariable String code) throws ApplicationException {
+        
+        try {
+            byte[] pdfData = pdfService.generateDepartmentPdf(code);
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("attachment", "departement_" + code + ".pdf");
+            headers.setContentLength(pdfData.length);
+            
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(pdfData);
+                    
+        } catch (Exception e) {
+            throw new ApplicationException("Erreur lors de la génération du PDF : " + e.getMessage());
+        }
     }
 }

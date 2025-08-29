@@ -2,11 +2,13 @@ package fr.digi.d202508.springdemo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Profile;
 
 /**
  * Point d'entrée de l'application Spring Boot
  */
 @SpringBootApplication
+@Profile("default")
 public class SpringDemoApplication {
 
     /**

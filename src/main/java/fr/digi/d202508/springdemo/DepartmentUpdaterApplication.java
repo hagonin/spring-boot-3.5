@@ -10,6 +10,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
@@ -19,12 +20,12 @@ import java.util.List;
  * en appelant l'API externe geo.api.gouv.fr sans démarrer Tomcat
  */
 @SpringBootApplication(exclude = WebMvcAutoConfiguration.class)
+@Profile("updater")
 public class DepartmentUpdaterApplication implements CommandLineRunner {
 
     @Autowired
     private DepartmentDao departmentDao;
-
-    @Value("${api.departements.url}")
+    @Value("${api.departments.url}")
     private String apiUrl;
 
     private final RestTemplate restTemplate = new RestTemplate();

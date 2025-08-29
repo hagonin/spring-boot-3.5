@@ -23,3 +23,4 @@ public class ApplicationException extends Exception {
         super(message, cause);
     }
 }
+
